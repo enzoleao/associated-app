@@ -47,7 +47,6 @@ export function ResetPasswordForm() {
   if (success) {
     return (
       <div className="flex flex-col justify-center items-center gap-6">
-        <h2 className="text-2xl font-bold text-gray-900">Redefinir sua senha</h2>
         <div className="flex flex-col items-center justify-center mt-2 gap-4 p-4 border rounded bg-green-50">
           <CheckCircle className="w-12 h-12 text-green-600" />
           <h2 className="text-xl font-bold text-green-700">Senha atualizada com sucesso!</h2>

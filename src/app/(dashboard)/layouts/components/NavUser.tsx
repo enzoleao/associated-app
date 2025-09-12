@@ -24,40 +24,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Avatar } from "./Avatar";
+import { useUser } from "@/contexts/UserContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
-function Avatar({ name }: { name?: string }) {
- 
 
-  return (
-    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold select-none">
-      AD
-    </div>
-  );
-}
-
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar?: string;
-  };
-}) {
+export function NavUser() {
+  
   const { isMobile } = useSidebar();
 
-  // Evita hidratação incorreta: popula dados apenas no client
-  const [clientUser, setClientUser] = React.useState<{
-    name: string;
-    email: string;
-    avatar?: string;
-  } | null>(null);
-
-  React.useEffect(() => {
-    setClientUser(user);
-  }, [user]);
-
-  if (!clientUser) return null; // não renderiza nada no SSR
+  const { user, logout, isLoading } = useUser()
 
   return (
     <SidebarMenu>
@@ -66,9 +42,13 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="hover:bg-white"
+              className="hover:bg-white flex items-center justify-center"
             >
-              <Avatar name={clientUser.name} />
+              {isLoading ? (
+                <Skeleton className="h-10 w-10 rounded-full" />
+              ) : (
+                <Avatar initials={user?.initials} color={user?.color} />
+              )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 
@@ -81,17 +61,15 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{clientUser.name}</span>
+                  <span className="truncate font-medium">{user?.name}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {clientUser.email}
+                    {user?.email}
                   </span>
                 </div>
               </div>
             </DropdownMenuLabel>
-
             <DropdownMenuSeparator />
-
-            <DropdownMenuGroup>
+            {/* <DropdownMenuGroup>
               <DropdownMenuItem>
                 <IconUserCircle />
                 Account
@@ -105,12 +83,10 @@ export function NavUser({
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem>
+            <DropdownMenuSeparator /> */}
+            <DropdownMenuItem onClick={logout} variant="destructive">
               <IconLogout />
-              Log out
+              Sair
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

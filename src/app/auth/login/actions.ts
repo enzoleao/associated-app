@@ -38,7 +38,7 @@ export async function login({ email, password }: LoginParams): Promise<LoginResp
       path: "/",
     };
 
-    (await cookieStore).set("user", JSON.stringify(data.user), cookieOptions);
+    (await cookieStore).set("user", JSON.stringify(data.user), {...cookieOptions, httpOnly: false});
     (await cookieStore).set("token", JSON.stringify(data.authorization.token), cookieOptions);
 
     return { success: true, user: data.user };

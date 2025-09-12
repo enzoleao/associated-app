@@ -13,16 +13,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 16)",
+          "--header-height": "calc(var(--spacing) * 18)",
         } as React.CSSProperties
       }
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader />
-        <div className="bg-gray-50 flex flex-1 flex-col">
-          {children}
-        </div>
+        <main className="flex items-center bg-gray-50 flex-1 flex-col p-8">
+          <div className="w-full max-w-7xl">
+            {children}
+          </div>
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
