@@ -29,11 +29,11 @@ export function AssociatesReport({
   card_data
 }: AssociatesReportProps) {
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4  *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4  *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4 ">
       {
         card_data.map((card)=> {
           return (
-            <Card className="@container/card bg-white" key={card.id}>
+            <Card className="@container/card bg-white " key={card.id}>
               <CardHeader >
                 <CardDescription>{card.name}</CardDescription>
                 <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">

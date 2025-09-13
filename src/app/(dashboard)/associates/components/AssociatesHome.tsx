@@ -4,6 +4,7 @@ import { AssociatesReport } from "./AssociatesReport";
 import { IconCheck, IconTrophy, IconUsers, IconUsersGroup } from "@tabler/icons-react";
 import { AssociatesSearchSection } from "./AssociatesSearchSection";
 import { AssociatesTable } from "./AssociatesTable";
+import { CreateAssociateDialogForm } from "./CreateAssociateDialogForm";
 
 export function AssociatesHome() {
 
@@ -57,12 +58,15 @@ export function AssociatesHome() {
                   <h2 className="text-3xl font-bold text-gray-900">Associados</h2>
                   <p className="text-gray-600 mt-2">Gerencie todos os associados e seus dependentes</p>
               </span>
-              <Button
-                className="bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center gap-2 h-12"
-              >
-                <Plus />
-                Novo Associado
-              </Button>
+              <CreateAssociateDialogForm>
+                <Button
+                  variant="primary"
+                  className="text-white rounded flex items-center justify-center gap-2 h-12"
+                >
+                  <Plus />
+                  Novo Associado
+                </Button>
+              </CreateAssociateDialogForm>
             </section>
             <AssociatesReport card_data={cardReports} />
             <AssociatesSearchSection />

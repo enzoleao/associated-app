@@ -108,7 +108,8 @@ export function ResetPasswordForm() {
 
       <Button
         type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded text-sm h-11 flex items-center justify-center gap-2 hover:bg-blue-700"
+        variant="primary"
+        className="w-full text-white py-2 rounded text-sm h-11 flex items-center justify-center gap-2"
       >
         <LogIn />
         ALTERAR SENHA
