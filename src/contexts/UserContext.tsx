@@ -29,9 +29,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const userCookie = Cookies.get("user");
-    console.log(userCookie)
     if (userCookie) {
-      console.log(userCookie)
       try {
         setUser(JSON.parse(userCookie));
       } catch {

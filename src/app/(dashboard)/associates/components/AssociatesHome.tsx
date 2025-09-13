@@ -1,44 +1,50 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { AssociatesReport } from "./AssociatesReport";
-import { IconUsers } from "@tabler/icons-react";
+import { IconCheck, IconTrophy, IconUsers, IconUsersGroup } from "@tabler/icons-react";
+import { AssociatesSearchSection } from "./AssociatesSearchSection";
+import { AssociatesTable } from "./AssociatesTable";
 
 export function AssociatesHome() {
 
     const cardReports = [
       {
         id: 1,
-        name: 'Total de associados',
-        icon: <IconUsers />,
-        value: 10,
+        name: 'Total de Associados',
+        icon: IconUsers,
+        value: 120,
         value_type: 'FIXED',
-        color: 'bg-blue-100'
+        background_color: 'bg-blue-100',
+        color: "text-blue-400"
       },
       {
         id: 2,
-        name: 'Associados ativos',
-        icon: '',
-        value: 10,
+        name: 'Associados Ativos',
+        icon: IconCheck,
+        value: 90,
         value_type: 'FIXED',
-        color: 'bg-green-100'
+        background_color: 'bg-green-100',
+        color: 'text-green-400',
 
       },
       {
         id: 3,
-        name: 'Total de dependentes',
-        icon: '',
-        value: 10,
+        name: 'Total de Dependentes',
+        icon: IconUsersGroup,
+        value: 47,
         value_type: 'FIXED',
-        color: 'bg-purple-100'
+        background_color: 'bg-purple-100',
+        color: 'text-purple-400',
 
       },
       {
         id: 4,
-        name: 'Taxa de retenção',
-        icon: '',
-        value: 10,
-        value_type: 'FIXED',
-        color: 'bg-blue-100'
+        name: 'Taxa de Retenção',
+        icon: IconTrophy,
+        value: 0.94,
+        value_type: 'PERCENTAGE',
+        background_color: 'bg-blue-100',
+        color: 'text-blue-400',
 
       },
     ]
@@ -59,6 +65,8 @@ export function AssociatesHome() {
               </Button>
             </section>
             <AssociatesReport card_data={cardReports} />
+            <AssociatesSearchSection />
+            <AssociatesTable />
           </div>
       </div>
 

@@ -33,7 +33,7 @@ function Input({ className, type, prefixIcon, suffixIcon, ...props }: InputProps
         type={inputType}
         className={cn(
           "w-full h-full outline-none bg-transparent px-2 placeholder:text-gray-400 selection:bg-blue-600 selection:text-white",
-          prefixIcon && "pl-8",
+          prefixIcon && "pl-10",
           (isPassword || suffixIcon) && "pr-8"
         )}
         {...props}
