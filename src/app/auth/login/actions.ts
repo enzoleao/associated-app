@@ -11,7 +11,7 @@ interface LoginResponse {
   success?: boolean;
   user?: any;
   error?: string;
-  messages?: []
+  messages?: any[];
 }
 
 export async function login({ email, password }: LoginParams): Promise<LoginResponse> {
@@ -25,21 +25,25 @@ export async function login({ email, password }: LoginParams): Promise<LoginResp
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => null);
-      return { error: errorData.error, messages: errorData.messages };
+      return { error: errorData?.error || "Erro no login", messages: errorData?.messages || [] };
     }
 
     const data = await res.json();
 
     const cookieStore = cookies();
+
     const cookieOptions = {
-      httpOnly: true,
+      httpOnly: process.env.NODE_ENV === "production",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict" as const,
+      sameSite: process.env.NODE_ENV === "production" ? "strict" as const : "lax" as const,
       path: "/",
     };
 
-    (await cookieStore).set("user", JSON.stringify(data.user), {...cookieOptions, httpOnly: false});
-    (await cookieStore).set("token", JSON.stringify(data.authorization.token), cookieOptions);
+    (await
+      cookieStore).set("token", data.authorization.token, cookieOptions);
+
+    (await
+      cookieStore).set("user", JSON.stringify(data.user), { ...cookieOptions, httpOnly: false });
 
     return { success: true, user: data.user };
   } catch (err) {

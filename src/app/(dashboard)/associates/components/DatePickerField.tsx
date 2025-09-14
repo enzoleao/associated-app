@@ -35,7 +35,7 @@ export function DatePickerField({ name, control, label, error }: DatePickerField
               <Button
                 variant="outline"
                 className={cn(
-                  "relative w-full h-[46px] rounded-sm border text-base md:text-sm transition",
+                  "relative w-full h-[46px] rounded-md border text-base md:text-sm transition",
                   "border-gray-300",
                   !field.value && "text-muted-foreground",
                   error && "border-red-500",
