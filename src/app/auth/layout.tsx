@@ -1,4 +1,3 @@
-// app/auth/layout.tsx
 import React, { ReactNode } from "react";
 import AuthenticationFormLayout from "./layouts/AuthenticationFormLayout";
 

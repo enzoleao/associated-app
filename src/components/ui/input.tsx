@@ -13,7 +13,7 @@ function Input({ className, type, prefixIcon, suffixIcon, label, id, ...props }:
 
   const isPassword = type === "password"
   const inputType = isPassword && showPassword ? "text" : type
-  const inputId = id || React.useId() // gera id se não for passado
+  const inputId = id || React.useId() 
 
   return (
     <div className="w-full">

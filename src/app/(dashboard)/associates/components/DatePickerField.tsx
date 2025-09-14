@@ -3,7 +3,7 @@
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { Controller } from "react-hook-form"
-import { ptBR } from 'date-fns/locale'  // Importando o locale em português
+import { ptBR } from 'date-fns/locale'  
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
