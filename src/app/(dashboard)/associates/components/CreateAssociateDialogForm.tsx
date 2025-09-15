@@ -11,8 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { IconDeviceFloppy } from "@tabler/icons-react";
 import { days, paymentMethods, states } from "@/utils/mocks";
-import { getPresignUrlProfileUpload, uploadProfileImage } from "../actions";
+import { getAddressByCEP, getPresignUrlProfileUpload, uploadProfileImage } from "../actions";
 import { Label } from "@/components/ui/label";
+import { ControlledColorPicker } from "./ColorPicker";
 
 interface CreateAssociateDialogFormProps {
   children: ReactNode;
@@ -36,12 +37,15 @@ interface CreateAssociateFormValues {
   association_date?: Date;
   payment_expiraton_day: string;
   profile_image?: string; 
+  color: string
 }
 
 const defaultFormValues: CreateAssociateFormValues = {
   email: "", name: "", cpf: "", phone: "", rg: "", birthday: undefined,
   profession_name: "", street: "", city: "", state: "", cep: "",
-  payment_method: "", number: "", neighborhood: "", association_date: undefined, payment_expiraton_day: ""
+  payment_method: "", number: "", neighborhood: "", association_date: undefined,
+  payment_expiraton_day: "",
+  color: "#000000",
 };
 
 export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFormProps) {
@@ -58,12 +62,11 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
     const numericCEP = cepValue.replace(/\D/g, "");
     if (numericCEP.length === 8) {
       (async () => {
-        const res = await fetch(`/api/cep/${numericCEP}`);
-        const data = await res.json();
-        setValue("street", data.logradouro || "");
-        setValue("neighborhood", data.bairro || "");
-        setValue("city", data.localidade || "");
-        const stateOption = states.find(s => s.initials === data.uf);
+        const res = await getAddressByCEP({cep: cepValue});
+        setValue("street", res.data?.logradouro || "");
+        setValue("neighborhood", res.data?.bairro || "");
+        setValue("city", res.data?.localidade || "");
+        const stateOption = states.find(s => s.initials === res.data?.uf);
         if (stateOption) setValue("state", stateOption.id.toString());
       })();
     }
@@ -127,10 +130,18 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
                 <Label>Data de Nascimento</Label>
                 <DatePickerField name="birthday" control={control} error={errors.birthday?.message} />
               </div>
-              <ControlledInput control={control} name="profession_name" label="Profissão (Opcional)" placeholder="Digite a profissão" />
+              <div className="flex flex-col gap-3 sm:flex-row w-full">
+                <ControlledInput control={control} name="profession_name" label="Profissão (Opcional)" placeholder="Digite a profissão" />
+              </div>
+            </div>
+            <div className="space-y-3 max-w-24">
+              <ControlledColorPicker
+                control={control}
+                name="color"
+                label="Cor do Usuário"
+              />
             </div>
           </div>
-
           <div className="space-y-3 rounded-lg border p-6">
             <h2 className="text-lg font-medium text-gray-900">Endereço</h2>
             <div className="flex flex-col gap-3 sm:flex-row">
@@ -158,14 +169,14 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
             <div className="flex gap-4">
               <ControlledSelect control={control} name="payment_method" label="Tipo de Pagamento" placeholder="Escolha o método" options={paymentMethodOptions} rules={{ required: "Tipo de pagamento é obrigatório" }} />
               <ControlledSelect control={control} name="payment_expiraton_day" label="Dia de vencimento" placeholder="Escolha um dia" options={daysOptions} rules={{ required: "Dia de vencimento é obrigatório" }} />
-            </div>teste
+            </div>
           </div>
 
           <DialogFooter className="sm:justify-between">
             <DialogClose asChild>
-              <Button type="button" variant="destructive">Fechar</Button>
+              <Button type="button" variant="destructive" size="lg">Fechar</Button>
             </DialogClose>
-            <Button type="submit" variant="primary">
+            <Button type="submit" variant="primary" size="lg">
               <IconDeviceFloppy className="mr-2 h-4 w-4" />
               Cadastrar Associado
             </Button>
