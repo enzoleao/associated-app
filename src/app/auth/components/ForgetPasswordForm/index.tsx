@@ -8,6 +8,7 @@ import { LogIn, CheckCircle, Undo2 } from "lucide-react";
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { forgetPassword } from "../../forget-password/actions";
+import { useLoading } from "@/contexts/LoadingContext";
 
 type LoginFormInputs = {
   email: string;
@@ -15,6 +16,8 @@ type LoginFormInputs = {
 
 export function ForgetPasswordForm() {
   const [success, setSuccess] = useState(false);
+    const { showLoading, hideLoading } = useLoading();
+  
 
   const {
     register,
@@ -24,10 +27,13 @@ export function ForgetPasswordForm() {
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
+      showLoading()
       await forgetPassword(data);
+      hideLoading()
       setSuccess(true);
     } catch (err) {
       console.error(err);
+      hideLoading()
       alert("Ocorreu um erro, tente novamente.");
     }
   };
