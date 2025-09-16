@@ -141,6 +141,7 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
         });
 
     queryClient.invalidateQueries({ queryKey: ['associates'] });
+    queryClient.invalidateQueries({ queryKey: ['associate-report'] });
 
 
     reset(defaultFormValues);
