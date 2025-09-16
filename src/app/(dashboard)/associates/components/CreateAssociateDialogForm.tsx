@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { ControlledColorPicker } from "./ColorPicker";
 import { toast } from "sonner";
 import { useLoading } from "@/contexts/LoadingContext";
+import { useAssociates } from "@/hooks/useAssociates";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CreateAssociateDialogFormProps {
   children: ReactNode;
@@ -55,6 +57,8 @@ const defaultFormValues: CreateAssociateFormValues = {
 };
 
 export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFormProps) {
+  const queryClient = useQueryClient();
+
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { showLoading, hideLoading } = useLoading();
@@ -136,6 +140,9 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
           position: "top-center",
         });
 
+    queryClient.invalidateQueries({ queryKey: ['associates'] });
+
+
     reset(defaultFormValues);
     setSelectedFile(null);
     setOpen(false);
@@ -184,7 +191,7 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
             <div className="flex flex-col gap-3 sm:flex-row">
               <div className="w-full flex flex-col gap-1.5">
                 <Label>Data de Nascimento</Label>
-                <DatePickerField name="birthday" control={control} error={errors.birthday?.message} />
+                <DatePickerField name="birthday" control={control} error={errors.birthday?.message} rules={{ required: "Data de nascimento é obrigatório" }}  required/>
               </div>
               <div className="w-full rounded-none">
                 <ControlledInput control={control} name="profession_name" label="Profissão (Opcional)" placeholder="Digite a profissão" />
@@ -201,13 +208,13 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
           <div className="space-y-3 rounded-lg border p-6">
             <h2 className="text-lg font-medium text-gray-900">Endereço</h2>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <ControlledMaskedInput control={control} name="zip_code" label="CEP" mask="_____-___" placeholder="00000-000" />
-              <ControlledInput control={control} name="street" label="Rua/Avenida" placeholder="Rua, avenida, etc ..." />
+              <ControlledMaskedInput control={control} name="zip_code" label="CEP" mask="_____-___" placeholder="00000-000" rules={{ required: "CEP é obrigatório" }} />
+              <ControlledInput control={control} name="street" label="Rua/Avenida" placeholder="Rua, avenida, etc ..." rules={{ required: "Rua/Avenida é obrigatório" }} />
               <ControlledInput control={control} name="number" label="Número" placeholder="Nº" />
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <ControlledInput control={control} name="neighborhood" label="Bairro" placeholder="Bairro" />
-              <ControlledInput control={control} name="city" label="Cidade" placeholder="Cidade" />
+              <ControlledInput control={control} name="neighborhood" label="Bairro" placeholder="Bairro" rules={{ required: "Bairro é obrigatório" }} />
+              <ControlledInput control={control} name="city" label="Cidade" placeholder="Cidade" rules={{ required: "Cidade é obrigatório" }} />
               <ControlledSelect control={control} name="state_id" label="Estado" placeholder="Escolha um Estado" options={stateOptions} rules={{ required: "Estado é obrigatório" }} />
             </div>
           </div>

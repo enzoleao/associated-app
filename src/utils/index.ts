@@ -15,9 +15,15 @@ export const convertPercentage  = (value: number) => {
 }
 
 export function formatToDDMMYYYY(dateStr: string): string {
-  if (!dateStr) return "";
+  if (!dateStr) return "-";
 
-  const [year, month, day] = dateStr.split("-");
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return "-";
+
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+
   return `${day}/${month}/${year}`;
 }
 
