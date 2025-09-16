@@ -23,7 +23,14 @@ import { useState } from "react"
 import { useFilters } from "@/contexts/FilterContext"
 
 export function getBadgeClasses(color: string) {
-  return `text-${color}-700 bg-${color}-100`
+  switch(color) {
+    case 'red': 
+      return 'text-red-700 bg-red-100'
+    case 'yellow': 
+      return 'text-yellow-700 bg-yellow-100'
+    case 'green': 
+      return 'text-green-700 bg-green-100'
+  }
 }
 
 

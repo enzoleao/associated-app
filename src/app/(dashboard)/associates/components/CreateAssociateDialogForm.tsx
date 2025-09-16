@@ -10,14 +10,16 @@ import { DatePickerField } from "./DatePickerField";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { IconDeviceFloppy } from "@tabler/icons-react";
-import { associateStatus, days, paymentMethods, planOptions, states } from "@/utils/mocks";
+import { associateStatus, days } from "@/utils/mocks";
 import { createAssociated, getAddressByCEP, getPresignUrlProfileUpload, uploadProfileImage } from "../actions";
 import { Label } from "@/components/ui/label";
 import { ControlledColorPicker } from "./ColorPicker";
 import { toast } from "sonner";
 import { useLoading } from "@/contexts/LoadingContext";
-import { useAssociates } from "@/hooks/useAssociates";
 import { useQueryClient } from "@tanstack/react-query";
+import { usePaymentMethods } from "@/hooks/usePaymentMethods";
+import { useAssociatePlans } from "@/hooks/useAssociatePlans";
+import { useAssociateStatus } from "@/hooks/useAssociateStatus";
 
 interface CreateAssociateDialogFormProps {
   children: ReactNode;
@@ -63,6 +65,11 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { showLoading, hideLoading } = useLoading();
 
+  const { data: paymentMethods } = usePaymentMethods()
+  const { data: associatePlans } = useAssociatePlans()
+  const { data: countryStates } = useAssociatePlans()
+  const { data: associateStatus } = useAssociateStatus()
+  
 
   const { control, handleSubmit, reset, setValue, watch, setError, formState: { errors } } = useForm<CreateAssociateFormValues>({
     defaultValues: defaultFormValues,
@@ -78,7 +85,7 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
         setValue("street", res.data?.logradouro || "");
         setValue("neighborhood", res.data?.bairro || "");
         setValue("city", res.data?.localidade || "");
-        const stateOption = states.find(s => s.initials === res.data?.uf);
+        const stateOption = countryStates?.find((s: { initials: string | undefined; }) => s.initials === res.data?.uf);
         if (stateOption) setValue("state_id", stateOption.id.toString());
       })();
     }
@@ -154,11 +161,7 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
 
 
   
-  const stateOptions = states.map(s => ({ value: s.id.toString(), label: s.name }));
-  const paymentMethodOptions = paymentMethods.map(p => ({ value: p.id.toString(), label: p.name }));
-  const daysOptions = days.map(d => ({ value: d.day.toString(), label: d.day }));
-  const planOptionsData = planOptions.map(d => ({ value: d.id.toString(), label: d.name }));
-  const associateStatusData = associateStatus.map(d => ({ value: d.id.toString(), label: d.name }));
+  const daysOptions = days.map(d => ({ id: d.day.toString(), name: d.day }));
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { setOpen(isOpen); if (!isOpen) reset(defaultFormValues); }}>
@@ -216,7 +219,7 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
             <div className="flex flex-col gap-3 sm:flex-row">
               <ControlledInput control={control} name="neighborhood" label="Bairro" placeholder="Bairro" rules={{ required: "Bairro é obrigatório" }} />
               <ControlledInput control={control} name="city" label="Cidade" placeholder="Cidade" rules={{ required: "Cidade é obrigatório" }} />
-              <ControlledSelect control={control} name="state_id" label="Estado" placeholder="Escolha um Estado" options={stateOptions} rules={{ required: "Estado é obrigatório" }} />
+              <ControlledSelect control={control} name="state_id" label="Estado" placeholder="Escolha um Estado" options={countryStates} rules={{ required: "Estado é obrigatório" }} />
             </div>
           </div>
 
@@ -227,15 +230,15 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
                 <Label>Data de Associação</Label>
                 <DatePickerField name="membership_date" control={control} error={errors.membership_date?.message} />
               </div>
-              <ControlledSelect control={control} name="associate_plan_id" label="Plano" placeholder="Escolha um Plano" options={planOptionsData} rules={{ required: "Plano é obrigatório" }} />
-              <ControlledSelect control={control} name="associate_status_id" label="Status" placeholder="Escolha um status" options={associateStatusData} rules={{ required: "Status é obrigatório" }} />
+              <ControlledSelect control={control} name="associate_plan_id" label="Plano" placeholder="Escolha um Plano" options={associatePlans} rules={{ required: "Plano é obrigatório" }} />
+              <ControlledSelect control={control} name="associate_status_id" label="Status" placeholder="Escolha um status" options={associateStatus} rules={{ required: "Status é obrigatório" }} />
             </section>
           </div>
 
           <div className="space-y-3 rounded-lg border p-6">
             <h2 className="text-lg font-medium text-gray-900">Financeiro</h2>
             <div className="flex gap-4">
-              <ControlledSelect control={control} name="payment_method_preference_id" label="Tipo de Pagamento" placeholder="Escolha o método" options={paymentMethodOptions} rules={{ required: "Tipo de pagamento é obrigatório" }} />
+              <ControlledSelect control={control} name="payment_method_preference_id" label="Tipo de Pagamento" placeholder="Escolha o método" options={paymentMethods} rules={{ required: "Tipo de pagamento é obrigatório" }} />
               <ControlledSelect control={control} name="payment_due_date" label="Dia de vencimento" placeholder="Escolha um dia" options={daysOptions} rules={{ required: "Dia de vencimento é obrigatório" }} />
             </div>
           </div>

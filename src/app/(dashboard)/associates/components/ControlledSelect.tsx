@@ -1,11 +1,11 @@
-import { Control, Controller, FieldPath, FieldValues, ControllerProps } from 'react-hook-form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+import { Control, Controller, FieldPath, FieldValues, ControllerProps } from "react-hook-form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface SelectOption {
-  value: string;
-  label: string;
+  id: string;
+  name: string;
 }
 
 interface ControlledSelectProps<T extends FieldValues> {
@@ -13,12 +13,17 @@ interface ControlledSelectProps<T extends FieldValues> {
   name: FieldPath<T>;
   label: string;
   placeholder: string;
-  options: SelectOption[];
-  rules?: ControllerProps['rules'];
+  options?: SelectOption[]; // agora é opcional
+  rules?: ControllerProps["rules"];
 }
 
 export function ControlledSelect<T extends FieldValues>({
-  control, name, label, placeholder, options, rules,
+  control,
+  name,
+  label,
+  placeholder,
+  options = [], // default para evitar undefined
+  rules,
 }: ControlledSelectProps<T>) {
   return (
     <Controller
@@ -43,11 +48,15 @@ export function ControlledSelect<T extends FieldValues>({
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-              {options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
+              {options.length > 0 ? (
+                options.map((option) => (
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.name}
+                  </SelectItem>
+                ))
+              ) : (
+                <p className="px-2 py-1 text-sm text-gray-500">Nenhuma opção disponível</p>
+              )}
             </SelectContent>
           </Select>
           {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
