@@ -1,55 +1,56 @@
 export const states = [
-      { "id": 1, "name": "Acre", "initials": "AC" },
-      { "id": 2, "name": "Alagoas", "initials": "AL" },
-      { "id": 3, "name": "Amapá", "initials": "AP" },
-      { "id": 4, "name": "Amazonas", "initials": "AM" },
-      { "id": 5, "name": "Bahia", "initials": "BA" },
-      { "id": 6, "name": "Ceará", "initials": "CE" },
-      { "id": 7, "name": "Distrito Federal", "initials": "DF" },
-      { "id": 8, "name": "Espírito Santo", "initials": "ES" },
-      { "id": 9, "name": "Goiás", "initials": "GO" },
-      { "id": 10, "name": "Maranhão", "initials": "MA" },
-      { "id": 11, "name": "Mato Grosso", "initials": "MT" },
-      { "id": 12, "name": "Mato Grosso do Sul", "initials": "MS" },
-      { "id": 13, "name": "Minas Gerais", "initials": "MG" },
-      { "id": 14, "name": "Pará", "initials": "PA" },
-      { "id": 15, "name": "Paraíba", "initials": "PB" },
-      { "id": 16, "name": "Paraná", "initials": "PR" },
-      { "id": 17, "name": "Pernambuco", "initials": "PE" },
-      { "id": 18, "name": "Piauí", "initials": "PI" },
-      { "id": 19, "name": "Rio de Janeiro", "initials": "RJ" },
-      { "id": 20, "name": "Rio Grande do Norte", "initials": "RN" },
-      { "id": 21, "name": "Rio Grande do Sul", "initials": "RS" },
-      { "id": 22, "name": "Rondônia", "initials": "RO" },
-      { "id": 23, "name": "Roraima", "initials": "RR" },
-      { "id": 24, "name": "Santa Catarina", "initials": "SC" },
-      { "id": 25, "name": "São Paulo", "initials": "SP" },
-      { "id": 26, "name": "Sergipe", "initials": "SE" },
-      { "id": 27, "name": "Tocantins", "initials": "TO" }
-]
+  { id: "ba799c73-5b02-4b7b-80a4-e02627ce2d81", name: "Acre", initials: "AC" },
+  { id: "872583b6-38a4-4116-9d98-b67357ef315e", name: "Alagoas", initials: "AL" },
+  { id: "c1491222-dbec-4095-a284-737371de5624", name: "Amapá", initials: "AP" },
+  { id: "fd9a0997-fadb-4c7c-9db1-032b604671c3", name: "Amazonas", initials: "AM" },
+  { id: "a424f343-3a62-45bf-85f3-b5e08e9beb11", name: "Bahia", initials: "BA" },
+  { id: "cf916391-4a9a-4a91-bcda-c9a3da9a4e65", name: "Ceará", initials: "CE" },
+  { id: "f925907c-8e21-4a2c-b8e6-c46b7189724d", name: "Distrito Federal", initials: "DF" },
+  { id: "abb3a4da-5944-4202-8f72-db056f3d329e", name: "Espírito Santo", initials: "ES" },
+  { id: "d63b0b34-a639-45fa-89fa-337369efc693", name: "Goiás", initials: "GO" },
+  { id: "6fad86f9-93fb-4d89-8d9c-5fdb6ade9ff5", name: "Maranhão", initials: "MA" },
+  { id: "08a263ba-363c-4de5-87ce-b55f75a46dbb", name: "Mato Grosso", initials: "MT" },
+  { id: "a7e8c14d-9623-468e-8b79-409f205ab9a8", name: "Mato Grosso do Sul", initials: "MS" },
+  { id: "916777eb-aa26-4c86-96cd-bbbb9e1651e4", name: "Minas Gerais", initials: "MG" },
+  { id: "8d09836e-0146-42fa-9eeb-5d50c3bc07bf", name: "Pará", initials: "PA" },
+  { id: "9ccb4be7-1a80-4f5f-82c9-47857dbfd3a7", name: "Paraíba", initials: "PB" },
+  { id: "719117a3-1009-4c0e-bbb0-57f052d346e4", name: "Paraná", initials: "PR" },
+  { id: "5670f557-43fb-42ec-952c-b52e83cefd6f", name: "Pernambuco", initials: "PE" },
+  { id: "aaca1473-9935-4930-91eb-465e67d06914", name: "Piauí", initials: "PI" },
+  { id: "3a90b85e-96b4-4625-924d-4e9517329893", name: "Rio de Janeiro", initials: "RJ" },
+  { id: "621bdcd3-403c-40e1-9bf2-071d5a9fc89a", name: "Rio Grande do Norte", initials: "RN" },
+  { id: "b1cf1b16-07c5-4c33-aeee-96cc59da3df6", name: "Rio Grande do Sul", initials: "RS" },
+  { id: "2aea3bcd-0d25-4519-8899-f7fe486a5a23", name: "Rondônia", initials: "RO" },
+  { id: "d66d526d-1314-4cfa-b623-2657323ce31a", name: "Roraima", initials: "RR" },
+  { id: "94ce7663-2028-42b3-83e2-762572be94a7", name: "Santa Catarina", initials: "SC" },
+  { id: "a603c9e3-c300-43b5-a49a-b347e2a772da", name: "São Paulo", initials: "SP" },
+  { id: "825b7a14-3ae8-4073-9eb2-eb90fdf1f65e", name: "Sergipe", initials: "SE" },
+  { id: "022012b7-f43b-4625-a9a3-357f573beccd", name: "Tocantins", initials: "TO" },
+];
 
 export const paymentMethods = [
-  { "id": 1, "name": "Agendamento Eletrônico" },
-  { "id": 2, "name": "Averbação" },
-  { "id": 3, "name": "Boleto" },
-  { "id": 4, "name": "Boleto (Aut)" },
-  { "id": 5, "name": "Cartão" },
-  { "id": 6, "name": "Cartão (Aut Recorrente)" },
-  { "id": 7, "name": "Cartão (Aut)" },
-  { "id": 8, "name": "Cartão de Crédito" },
-  { "id": 9, "name": "Cartão de Débito" },
-  { "id": 10, "name": "Cheque" },
-  { "id": 11, "name": "Depósito em conta" },
-  { "id": 12, "name": "Desconto em Folha" },
-  { "id": 13, "name": "Dinheiro" },
-  { "id": 14, "name": "Débito em conta" },
-  { "id": 15, "name": "Débito em conta (Aut)" },
-  { "id": 16, "name": "Débito no telefone" },
-  { "id": 17, "name": "Ocorrências" },
-  { "id": 18, "name": "PIX" },
-  { "id": 19, "name": "PIX (Aut)" },
-  { "id": 20, "name": "Permuta" }
-]
+  { id: "2f4144f8-a83f-4e39-a3ad-26e4e1711656", name: "Agendamento Eletrônico" },
+  { id: "a16cb72f-7987-4a05-9cc5-b6fbbb3949b7", name: "Averbação" },
+  { id: "2fdb7adc-8867-404f-adff-20d0c47187bd", name: "Boleto" },
+  { id: "c80aa514-dd46-4513-b455-d75e9ff86fd5", name: "Boleto (Aut)" },
+  { id: "123c5b3f-5631-43f5-bb6f-4122b0a91e83", name: "Cartão" },
+  { id: "576e2cad-f5cd-4118-ae79-f4876043dda5", name: "Cartão (Aut Recorrente)" },
+  { id: "348c0842-2b87-4d53-9cec-63d57ed33002", name: "Cartão (Aut)" },
+  { id: "8fb3dc29-4f30-49da-be08-4a2b839859bb", name: "Cartão de Crédito" },
+  { id: "9ed0d8d2-35e8-4c3d-a52b-f8c6fe105b90", name: "Cartão de Débito" },
+  { id: "8fb3085a-e34f-4930-869f-f4700ecbfc4d", name: "Cheque" },
+  { id: "74ad8862-0fd7-4c13-9e91-3e19535871db", name: "Depósito em conta" },
+  { id: "6e34b729-e959-456b-afda-1638ae6561b4", name: "Desconto em Folha" },
+  { id: "f142cacd-95a7-4392-9f52-73578e2d00f5", name: "Dinheiro" },
+  { id: "4281c562-f5b0-45c4-a5e6-d942db69d75f", name: "Débito em conta" },
+  { id: "76740143-c40a-4958-9f99-74d3736d7782", name: "Débito em conta (Aut)" },
+  { id: "47f0dacc-fc65-4fe6-be32-20de22d2f8c7", name: "Débito no telefone" },
+  { id: "b338918d-4c89-4470-b983-e5a3b1754e2b", name: "Ocorrências" },
+  { id: "8f3872e0-542f-4842-b2fc-d5eac9f80a00", name: "PIX" },
+  { id: "217cfeea-e764-4713-8ee0-e487c0a3f440", name: "PIX (Aut)" },
+  { id: "e4eba9f8-f8b0-404f-8888-8cc3fccb65c8", name: "Permuta" }
+];
+
 
 export const days = [
   { "day": "1" },
@@ -83,4 +84,14 @@ export const days = [
   { "day": "29" },
   { "day": "30" },
   { "day": "31" }
+]
+
+export const planOptions = [
+  {id: "bc4c9097-be53-4db2-91e0-7ddf604113bb", name: 'Padrão'}
+]
+
+export const associateStatus = [
+  { id: 1, name: "Ativo" },
+  { id: 2, name: "Inativo" },
+  { id: 3, name: "Pendente" },
 ]

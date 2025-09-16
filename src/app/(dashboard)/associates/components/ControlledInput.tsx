@@ -39,7 +39,7 @@ export function ControlledInput<T extends FieldValues>({
             )}
           />
           {error && (
-            <p className="text-red-500 text-sm mt-1">{error.message}</p>
+            <p className="text-red-500 text-sm">{error.message}</p>
           )}
         </div>
       )}

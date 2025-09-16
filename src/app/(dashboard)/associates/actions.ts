@@ -49,18 +49,18 @@ interface CreateAssociatedData {
   cpf: string;
   phone: string;
   rg?: string;
-  birthday?: Date;
+  birthday?: string;
   profession_name: string;
   street: string;
   city: string;
-  state: string;
-  cep: string;
-  payment_method: string;
+  state_id: string;
+  zip_code: string;
+  payment_method_preference_id: string;
   number: string;
   neighborhood: string;
-  association_date?: Date;
-  payment_expiraton_day: string;
-  profile_image?: string; 
+  membership_date?: string;
+  payment_due_date: string;
+  image_path?: string; 
   color: string
 }
 
@@ -71,8 +71,6 @@ export async function getAddressByCEP({ cep }: GetAddressByCEPParams): Promise<G
       headers: { "Content-Type": "application/json" },
       cache: "no-store",
     });
-
-    console.log(res)
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => null);
@@ -141,36 +139,33 @@ export async function uploadProfileImage({presign_url, file}:UploadProfileImageD
   
 }
 
-export async function creteAssociated(params: CreateAssociatedData) {
+export async function createAssociated(params: CreateAssociatedData) {
   try {
-    const res = await fetch(`${process.env.API_URL}/auth/signin`, {
+
+    const token = (await cookies()).get("token")?.value;
+
+    if (!token) {
+      return {message: "Usuário não autenticado", success: false};
+    }
+
+    
+    const res = await fetch(`${process.env.API_URL}/associates`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, 
+      },
       body: JSON.stringify(params),
       cache: "no-store",
     });
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => null);
-      return { error: errorData?.error || "Erro no login", messages: errorData?.messages || [] };
+      console.log(errorData)
+      return { error: errorData?.error || "Erro ao cadastrar associadoss", messages: errorData?.messages || [], success: false };
     }
 
     const data = await res.json();
-
-    const cookieStore = cookies();
-
-    const cookieOptions = {
-      httpOnly: process.env.NODE_ENV === "production",
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" as const : "lax" as const,
-      path: "/",
-    };
-
-    (await
-      cookieStore).set("token", data.authorization.token, cookieOptions);
-
-    (await
-      cookieStore).set("user", JSON.stringify(data.user), { ...cookieOptions, httpOnly: false });
 
     return { success: true, user: data.user };
   } catch (err) {
