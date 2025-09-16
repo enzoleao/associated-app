@@ -10,7 +10,7 @@ import { DatePickerField } from "./DatePickerField";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { IconDeviceFloppy } from "@tabler/icons-react";
-import { associateStatus, days } from "@/utils/mocks";
+import { days } from "@/utils/mocks";
 import { createAssociated, getAddressByCEP, getPresignUrlProfileUpload, uploadProfileImage } from "../actions";
 import { Label } from "@/components/ui/label";
 import { ControlledColorPicker } from "./ColorPicker";
@@ -20,6 +20,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { usePaymentMethods } from "@/hooks/usePaymentMethods";
 import { useAssociatePlans } from "@/hooks/useAssociatePlans";
 import { useAssociateStatus } from "@/hooks/useAssociateStatus";
+import { useStates } from "@/hooks/useStates";
 
 interface CreateAssociateDialogFormProps {
   children: ReactNode;
@@ -67,7 +68,7 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
 
   const { data: paymentMethods } = usePaymentMethods()
   const { data: associatePlans } = useAssociatePlans()
-  const { data: countryStates } = useAssociatePlans()
+  const { data: countryStates } = useStates()
   const { data: associateStatus } = useAssociateStatus()
   
 

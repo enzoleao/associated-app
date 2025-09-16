@@ -19,7 +19,7 @@ import { formatCpfCnpj, formatToDDMMYYYY } from "@/utils"
 import { IconEye, IconPencilMinus, IconTrash } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import { useAssociates } from "@/hooks/useAssociates"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useFilters } from "@/contexts/FilterContext"
 
 export function getBadgeClasses(color: string) {
@@ -140,37 +140,105 @@ export const columns: ColumnDef<any>[] = [
   },
 ]
 
+const PAGE_SIZE = 10;
+
+const MemoizedTableBody = React.memo(function MemoizedTableBody({
+  rows,
+  loading
+}: {
+  rows: any[];
+  loading: boolean;
+}) {
+  if (loading) {
+    return (
+      <>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <TableRow key={i} className="h-[85px]">
+            <TableCell className="px-4 py-3 w-[420px]">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
+                <div className="flex flex-col gap-1">
+                  <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="h-3 w-40 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </TableCell>
+            <TableCell className="px-4 py-3 w-[102px]">
+              <div className="h-5 w-14 bg-gray-200 rounded-full animate-pulse"></div>
+            </TableCell>
+            <TableCell className="px-4 py-3 w-[98px]">
+              <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+            </TableCell>
+            <TableCell className="px-4 py-3 max-w-[150px]">
+              <div className="h-4 w-6 bg-gray-200 rounded animate-pulse"></div>
+            </TableCell>
+            <TableCell className="px-4 py-3">
+              <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+            </TableCell>
+            <TableCell className="px-4 py-3">
+              <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+            </TableCell>
+            <TableCell className="flex gap-2 px-4 py-3 mt-3">
+              <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
+              <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
+              <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </>
+    );
+  }
+  return (
+    <>
+      {rows.map((row) => (
+        <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="h-[85px]">
+          {row.getVisibleCells().map((cell: { id: React.Key | null | undefined; column: { columnDef: { cell: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.ComponentType<any> | null | undefined } }; getContext: () => any }) => (
+            <TableCell key={cell.id} className="px-4 py-3 text-sm text-gray-600">
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </>
+  );
+});
+
 export function AssociatesTable() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
+  const [currentPage, setCurrentPage] = useState(1);
 
       const { searchTerm, associateStatusId } = useFilters();
-
-
   const { data: associatesFetchData, isLoading: associateFetchLoading } = useAssociates({search_term: searchTerm, associate_status_id: associateStatusId})
 
- const mappedData = React.useMemo(() => 
-  (associatesFetchData?.data || []).map((item: {
-    initials: any; id: any; name: any; email: any; cpf: any; image_path: any; associate: { associateStatus: any; associatePlan: any; dependents_count: any; membership_date: any; last_payment: any, initials: any } 
-}) => ({
-    id: item.id || "-",
-    name: item.name || "-",
-    email: item.email || "-",
-    cpf: item.cpf || "-",
-    image: item.image_path || "-",
-    initials: item.initials,
-    status: item.associate?.associateStatus || { id: "-", name: "-", color: "gray" },
-    plan: item.associate?.associatePlan || { id: "-", name: "-" },
-    dependents_count: item.associate?.dependents_count ?? 0,
-    membership_start_date: item.associate?.membership_date || "-",
-    last_payment: item.associate?.last_payment || "-",
-  }))
-, [associatesFetchData?.data])
+  const mappedData = useMemo(() =>
+    (associatesFetchData?.data || []).map((item: any) => ({
+      id: item.id || "-",
+      name: item.name || "-",
+      email: item.email || "-",
+      cpf: item.cpf || "-",
+      image: item.image_path || "-",
+      initials: item.initials,
+      status: item.associate?.associateStatus || { id: "-", name: "-", color: "gray" },
+      plan: item.associate?.associatePlan || { id: "-", name: "-" },
+      dependents_count: item.associate?.dependents_count ?? 0,
+      membership_start_date: item.associate?.membership_date || "-",
+      last_payment: item.associate?.last_payment || "-",
+    })),
+    [associatesFetchData?.data]
+  );
+
+  // Paginação local
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return mappedData.slice(start, start + PAGE_SIZE);
+  }, [mappedData, currentPage]);
 
   const table = useReactTable({
-    data: mappedData,
+    data: paginatedData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -186,7 +254,9 @@ export function AssociatesTable() {
       columnVisibility,
       rowSelection,
     },
-  })
+  });
+
+  const totalPages = Math.ceil(mappedData.length / PAGE_SIZE) || 1;
 
   return (
     <div className="w-full">
@@ -209,65 +279,12 @@ export function AssociatesTable() {
             ))}
           </TableHeader>
           <TableBody>
-          {associateFetchLoading ? (
-  Array.from({ length: 5 }).map((_, i) => (
-    <TableRow key={i} className="h-[85px]">
-      <TableCell className="px-4 py-3 w-[420px]">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
-          <div className="flex flex-col gap-1">
-            <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-3 w-40 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
-          </div>
-        </div>
-      </TableCell>
-
-      <TableCell className="px-4 py-3 w-[102px]">
-        <div className="h-5 w-14 bg-gray-200 rounded-full animate-pulse"></div>
-      </TableCell>
-
-      <TableCell className="px-4 py-3 w-[98px]">
-        <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
-      </TableCell>
-
-      <TableCell className="px-4 py-3 max-w-[150px]">
-        <div className="h-4 w-6 bg-gray-200 rounded animate-pulse"></div>
-      </TableCell>
-
-      <TableCell className="px-4 py-3">
-        <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
-      </TableCell>
-
-      <TableCell className="px-4 py-3">
-        <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
-      </TableCell>
-
-      <TableCell className="flex gap-2 px-4 py-3 mt-3">
-        <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
-        <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
-        <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
-      </TableCell>
-    </TableRow>
-  ))
-  ) : (
-    table.getRowModel().rows.map((row) => (
-      <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="h-[85px]">
-        {row.getVisibleCells().map((cell) => (
-          <TableCell key={cell.id} className="px-4 py-3 text-sm text-gray-600">
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        ))}
-      </TableRow>
-    ))
-  )}
-
+            <MemoizedTableBody rows={table.getRowModel().rows} loading={associateFetchLoading} />
           </TableBody>
-
           <TableFooter>
             <TableRow>
               <TableCell colSpan={columns.length} className="px-4 py-4 text-sm font-light text-gray-700">
-                Mostrando {table.getRowModel().rows.length} de {table.getCoreRowModel().rows.length} associados
+                Mostrando {paginatedData.length} de {mappedData.length} associados
               </TableCell>
             </TableRow>
           </TableFooter>

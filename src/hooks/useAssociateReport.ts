@@ -1,13 +1,23 @@
 "use client"
-import { fetchAssociateReport } from '@/app/(dashboard)/associates/api';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
 export const useAssociateReport = () => {
-  const queryKey = ['associate-report'];
+  const queryKey = ["associate-report"];
 
   const queryResult = useQuery({
     queryKey,
-    queryFn: () => fetchAssociateReport(),
+    queryFn: async () => {
+      const res = await fetch("/api/associates/associate-report", {
+        method: "GET",
+        cache: "no-store",
+      });
+
+      if (!res.ok) {
+        throw new Error("Falha ao buscar relatório de associados");
+      }
+
+      return res.json();
+    },
     staleTime: 5 * 1000,
   });
 
