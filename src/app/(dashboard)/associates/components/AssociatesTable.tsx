@@ -89,7 +89,7 @@ export const columns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <div className="text-start flex items-center gap-2">
         {row.original.dependents_count ?? 0}
-        <DependentsModal userId={row.original.id}>
+        <DependentsModal userId={row.original.associate.id}>
           <Button
             className="w-7 h-7 bg-transparent shadow-none text-blue-500 hover:bg-blue-100"
           >
@@ -229,6 +229,7 @@ export function AssociatesTable() {
       dependents_count: item.associate?.dependents_count ?? 0,
       membership_start_date: item.associate?.membership_date || "-",
       last_payment: item.associate?.last_payment || "-",
+      associate: item.associate || { id: "-" }
     })),
     [associatesFetchData?.data]
   );
