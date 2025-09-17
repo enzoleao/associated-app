@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge"
 import { useAssociates } from "@/hooks/useAssociates"
 import { useState, useMemo } from "react"
 import { useFilters } from "@/contexts/FilterContext"
+import { DependentsModal } from "./DependentsModal"
 
 export function getBadgeClasses(color: string) {
   switch(color) {
@@ -88,12 +89,13 @@ export const columns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <div className="text-start flex items-center gap-2">
         {row.original.dependents_count ?? 0}
-        <Button
-          onClick={() => console.log(row.original)}
-          className="w-7 h-7 bg-transparent shadow-none text-blue-500 hover:bg-blue-100"
-        >
-          <IconEye />
-        </Button>
+        <DependentsModal userId={row.original.id}>
+          <Button
+            className="w-7 h-7 bg-transparent shadow-none text-blue-500 hover:bg-blue-100"
+          >
+            <IconEye />
+          </Button>
+        </DependentsModal>
       </div>
     ),
   },
@@ -231,7 +233,6 @@ export function AssociatesTable() {
     [associatesFetchData?.data]
   );
 
-  // Paginação local
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * PAGE_SIZE;
     return mappedData.slice(start, start + PAGE_SIZE);
