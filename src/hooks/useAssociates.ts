@@ -1,24 +1,41 @@
-"use client"
+"use client";
 import { useQuery } from "@tanstack/react-query";
+
+interface UseAssociatesProps {
+  search_term?: string;
+  associate_status_id?: string;
+  page?: number;
+  per_page?: number;
+}
+
+interface AssociateResponse {
+  data: any[];
+  meta: {
+    page: number;
+    per_page: number;
+    total_items: number;
+    total_pages: number;
+    next_page: number | null;
+    previous_page: number | null;
+  };
+}
 
 export const useAssociates = ({
   search_term,
   associate_status_id,
-  initialData,
-}: {
-  search_term?: string;
-  associate_status_id?: string;
-  initialData?: any;
-}) => {
-  const queryKey = ["associates", search_term, associate_status_id];
+  page = 1,
+  per_page = 10,
+}: UseAssociatesProps) => {
+  const queryKey = ["associates", search_term, associate_status_id, page, per_page];
 
-  const queryResult = useQuery({
+  return useQuery<AssociateResponse, Error>({
     queryKey,
     queryFn: async () => {
       const queryParams = new URLSearchParams();
       if (search_term) queryParams.append("search_term", search_term);
-      if (associate_status_id)
-        queryParams.append("associate_status_id", associate_status_id);
+      if (associate_status_id) queryParams.append("associate_status_id", associate_status_id);
+      queryParams.append("page", page.toString());
+      queryParams.append("per_page", per_page.toString());
 
       const res = await fetch(`/api/associates?${queryParams.toString()}`, {
         method: "GET",
@@ -31,9 +48,8 @@ export const useAssociates = ({
 
       return res.json();
     },
-    initialData,
-    staleTime: 5 * 1000,
-  });
+    staleTime: 5000,
+    placeholderData: (previousData) => previousData, 
 
-  return queryResult;
+  });
 };

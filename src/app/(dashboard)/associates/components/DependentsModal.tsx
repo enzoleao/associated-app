@@ -1,88 +1,138 @@
 "use client";
 
 import React, { useState, ReactNode } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { IconDeviceFloppy } from "@tabler/icons-react";
 import { Label } from "@/components/ui/label";
-import { useLoading } from "@/contexts/LoadingContext";
-import { useQueryClient } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useDependentsAssociated } from "@/hooks/useDependentsAssociated";
-
-
+import { formatCpfCnpj, formatToDDMMYYYY } from "@/utils";
 
 interface CreateAssociateDialogFormProps {
   children: ReactNode;
-  userId?: string; // novo prop
+  associateId?: string;
 }
 
-export function DependentsModal({ children, userId }: CreateAssociateDialogFormProps) {
-  const [currentUser, setCurrentUser] = useState<string>('');
+export function DependentsModal({
+  children,
+  associateId,
+}: CreateAssociateDialogFormProps) {
+  const [currentAssociated, setCurrentAssociated] = useState<string>("");
   const [open, setOpen] = useState(false);
 
-    const { data, isLoading, isError, error } = useDependentsAssociated(currentUser);
+  const { data, isLoading } = useDependentsAssociated(currentAssociated);
 
   return (
     <Dialog
       open={open}
       onOpenChange={(isOpen) => {
         setOpen(isOpen);
-        if (isOpen && userId) setCurrentUser(userId); // seta currentUser ao abrir
+        if (isOpen && associateId) setCurrentAssociated(associateId);
       }}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-3xl">
+      <DialogContent className="sm:max-w-3xl"   
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        >
         <DialogHeader>
-            <button onClick={()=> console.log(data)}></button>
-          <DialogTitle>Dependentes de {currentUser || "Associado"}</DialogTitle>
-          <DialogDescription>Segue abaixo os dependentes do associado</DialogDescription>
+          <DialogTitle asChild>
+            {isLoading ? (
+                <div>
+                <Skeleton className="h-6 w-64" />
+                </div>
+            ) : (
+                <span>Dependentes de {data?.user.name ?? ""}</span>
+            )}
+            </DialogTitle>
+
+            <DialogDescription asChild>
+            {isLoading ? (
+                <div className="mt-2">
+                <Skeleton className="h-4 w-72" />
+                </div>
+            ) : (
+                <p>Segue abaixo os dependentes do associado</p>
+            )}
+            </DialogDescription>
         </DialogHeader>
-        {/* resto do conteúdo */}
-        <div className="space-y-3 rounded-lg border p-4 grid grid-cols-2 gap-4"> 
-            <div> 
-                <Label className="mb-1">Nome</Label> 
-                <p className="text-gray-700">Enzo Gabriel Pinheiro de Leao</p> 
-            </div> 
-            <div> 
-                <Label className="mb-1">Parentesco</Label> 
-                <p className="text-gray-700">Filha</p> 
-            </div> 
-            <div> 
-                <Label className="mb-1">Data de Nascimento</Label> 
-                <p className="text-gray-700">15/08/2010</p> 
-            </div> 
-            <div> 
-                <Label className="mb-1">CPF</Label> 
-                <p className="text-gray-700">123.456.789-00</p> 
-            </div> 
+
+        <div className="space-y-4">
+          {isLoading
+            ? Array.from({ length: 2 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="space-y-3 rounded-lg border p-4 grid grid-cols-2 gap-4"
+                >
+                  <div>
+                    <Skeleton className="h-4 w-16 mb-1" />
+                    <Skeleton className="h-5 w-40" />
+                  </div>
+                  <div>
+                    <Skeleton className="h-4 w-24 mb-1" />
+                    <Skeleton className="h-5 w-32" />
+                  </div>
+                  <div>
+                    <Skeleton className="h-4 w-32 mb-1" />
+                    <Skeleton className="h-5 w-28" />
+                  </div>
+                  <div>
+                    <Skeleton className="h-4 w-16 mb-1" />
+                    <Skeleton className="h-5 w-36" />
+                  </div>
+                </div>
+              ))
+            : data?.dependent?.length
+            ? data.dependent.map((dep: any, idx: number) => (
+                <div
+                  key={idx}
+                  className="space-y-3 rounded-lg border p-4 grid grid-cols-2 gap-4"
+                >
+                  <div>
+                    <Label className="mb-1">Nome</Label>
+                    <p className="text-gray-700">{dep.name ?? "-"}</p>
+                  </div>
+                  <div>
+                    <Label className="mb-1">Parentesco</Label>
+                    <p className="text-gray-700">{dep.dependent_relationship?.name ?? "-"}</p>
+                  </div>
+                  <div>
+                    <Label className="mb-1">Data de Nascimento</Label>
+                    <p className="text-gray-700">{dep.birthday ? formatToDDMMYYYY(dep.birthday) : "-"}</p>
+                  </div>
+                  <div>
+                    <Label className="mb-1">CPF</Label>
+                    <p className="text-gray-700">{dep.cpf ? formatCpfCnpj(dep.cpf) : "-"}</p>
+                  </div>
+                </div>
+              ))
+            : (
+              <div className="rounded-lg border p-4 text-center text-gray-500">
+                Nenhum dependente cadastrado
+              </div>
+            )}
         </div>
-        <div className="space-y-3 rounded-lg border p-4 grid grid-cols-2 gap-4"> 
-            <div> 
-                <Label className="mb-1">Nome</Label> 
-                <p className="text-gray-700">Enzo Gabriel Pinheiro de Leao</p> 
-            </div> 
-            <div> 
-                <Label className="mb-1">Parentesco</Label> 
-                <p className="text-gray-700">Filha</p> 
-            </div> 
-            <div> 
-                <Label className="mb-1">Data de Nascimento</Label> 
-                <p className="text-gray-700">15/08/2010</p> 
-            </div> 
-            <div> 
-                <Label className="mb-1">CPF</Label> 
-                <p className="text-gray-700">123.456.789-00</p> 
-            </div> 
-        </div> 
+
         <DialogFooter className="sm:justify-between">
-            <DialogClose asChild>
-                <Button type="button" variant="destructive" size="lg">Fechar</Button>
-            </DialogClose>
-            <Button type="submit" variant="primary" size="lg">
-                <IconDeviceFloppy className="mr-2 h-4 w-4" />
-                Cadastrar Associado
+          <DialogClose asChild>
+            <Button type="button" variant="destructive" size="lg">
+              Fechar
             </Button>
+          </DialogClose>
+          <Button type="submit" variant="primary" size="lg">
+            <IconDeviceFloppy className="mr-2 h-4 w-4" />
+            Cadastrar Dependente
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

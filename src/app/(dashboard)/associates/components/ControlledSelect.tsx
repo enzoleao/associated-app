@@ -50,7 +50,7 @@ export function ControlledSelect<T extends FieldValues>({
             <SelectContent>
               {options.length > 0 ? (
                 options.map((option) => (
-                  <SelectItem key={option.id} value={option.id}>
+                  <SelectItem key={option.id} value={option.id.toString()}>
                     {option.name}
                   </SelectItem>
                 ))

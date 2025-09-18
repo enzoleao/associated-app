@@ -7,8 +7,8 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   SortingState,
   useReactTable,
   VisibilityState,
@@ -19,7 +19,7 @@ import { formatCpfCnpj, formatToDDMMYYYY } from "@/utils"
 import { IconEye, IconPencilMinus, IconTrash } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import { useAssociates } from "@/hooks/useAssociates"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useFilters } from "@/contexts/FilterContext"
 import { DependentsModal } from "./DependentsModal"
 
@@ -31,39 +31,47 @@ export function getBadgeClasses(color: string) {
       return 'text-yellow-700 bg-yellow-100'
     case 'green': 
       return 'text-green-700 bg-green-100'
+    default:
+      return 'text-gray-700 bg-gray-100'
   }
 }
 
-
 export const columns: ColumnDef<any>[] = [
   {
-  id: "associated",
-  header: "ASSOCIADO",
-  enableHiding: false,
-  cell: ({ row }) => {
-    const hasImage = !!row.original.image && row.original.image !== '-';
-    return (
-      <div className="flex items-center gap-3 pr-4">
-        {hasImage ? (
-          <img
-            src={row.original.image}
-            alt={row.original.name}
-            className="h-10 w-10 rounded-full object-cover"
-          />
-        ) : (
-          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-500 font-medium">{row.original.initials}</span>
+    id: "associated",
+    header: "ASSOCIADO",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const hasImage = !!row.original.image && row.original.image !== '-';
+      return (
+        <div className="flex items-center gap-3 pr-4">
+          {hasImage ? (
+            <img
+              src={row.original.image}
+              alt={row.original.name}
+              className="h-10 w-10 rounded-full object-cover"
+            />
+          ) : (
+            <div
+              className="h-10 w-10 rounded-full flex items-center justify-center"
+              style={{
+                backgroundColor: row.original.color
+                  ? row.original.color + '5D' 
+                  : 'rgba(128, 128, 128, 0.3)',
+              }}
+            >
+              <span className="text-black font-medium">{row.original.initials}</span>
+            </div>
+          )}
+          <div className="flex flex-col">
+            <p className="font-medium text-gray-900">{row.original.name || "-"}</p>
+            <p className="text-sm text-gray-500">{row.original.email || "-"}</p>
+            <p className="text-sm text-gray-400">{formatCpfCnpj(row.original.cpf || "-")}</p>
           </div>
-        )}
-        <div className="flex flex-col">
-          <p className="font-medium text-gray-900">{row.original.name || "-"}</p>
-          <p className="text-sm text-gray-500">{row.original.email || "-"}</p>
-          <p className="text-sm text-gray-400">{formatCpfCnpj(row.original.cpf || "-")}</p>
         </div>
-      </div>
-    );
+      );
+    },
   },
-},
   {
     accessorFn: (row) => row.status.name,
     id: "status",
@@ -89,7 +97,7 @@ export const columns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <div className="text-start flex items-center gap-2">
         {row.original.dependents_count ?? 0}
-        <DependentsModal userId={row.original.associate.id}>
+        <DependentsModal associateId={row.original.associate.id}>
           <Button
             className="w-7 h-7 bg-transparent shadow-none text-blue-500 hover:bg-blue-100"
           >
@@ -154,7 +162,7 @@ const MemoizedTableBody = React.memo(function MemoizedTableBody({
   if (loading) {
     return (
       <>
-        {Array.from({ length: 5 }).map((_, i) => (
+        {Array.from({ length: PAGE_SIZE }).map((_, i) => (
           <TableRow key={i} className="h-[85px]">
             <TableCell className="px-4 py-3 w-[420px]">
               <div className="flex items-center gap-3">
@@ -195,7 +203,7 @@ const MemoizedTableBody = React.memo(function MemoizedTableBody({
     <>
       {rows.map((row) => (
         <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="h-[85px]">
-          {row.getVisibleCells().map((cell: { id: React.Key | null | undefined; column: { columnDef: { cell: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.ComponentType<any> | null | undefined } }; getContext: () => any }) => (
+          {row.getVisibleCells().map((cell: { id: React.Key | null | undefined; column: { columnDef: { cell: string | number | bigint | boolean | React.ComponentType<any> | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined } }; getContext: () => any }) => (
             <TableCell key={cell.id} className="px-4 py-3 text-sm text-gray-600">
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
             </TableCell>
@@ -213,20 +221,29 @@ export function AssociatesTable() {
   const [rowSelection, setRowSelection] = useState({})
   const [currentPage, setCurrentPage] = useState(1);
 
-      const { searchTerm, associateStatusId } = useFilters();
-  const { data: associatesFetchData, isLoading: associateFetchLoading } = useAssociates({search_term: searchTerm, associate_status_id: associateStatusId})
+  const { searchTerm, associateStatusId } = useFilters();
+  const { data: associatesFetchData, isLoading, isFetching } = useAssociates({
+    search_term: searchTerm,
+    associate_status_id: associateStatusId,
+    page: currentPage,
+    per_page: PAGE_SIZE,
+  });
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, associateStatusId]);
 
   const mappedData = useMemo(() =>
     (associatesFetchData?.data || []).map((item: any) => ({
       id: item.id || "-",
       name: item.name || "-",
       email: item.email || "-",
+      color: item.color || "gray",
       cpf: item.cpf || "-",
       image: item.image_path || "-",
-      initials: item.initials,
+      initials: item.initials || "-",
       status: item.associate?.associateStatus || { id: "-", name: "-", color: "gray" },
       plan: item.associate?.associatePlan || { id: "-", name: "-" },
-      dependents_count: item.associate?.dependents_count ?? 0,
+      dependents_count: item.associate?._count?.dependent ?? 0,
       membership_start_date: item.associate?.membership_date || "-",
       last_payment: item.associate?.last_payment || "-",
       associate: item.associate || { id: "-" }
@@ -234,13 +251,8 @@ export function AssociatesTable() {
     [associatesFetchData?.data]
   );
 
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return mappedData.slice(start, start + PAGE_SIZE);
-  }, [mappedData, currentPage]);
-
   const table = useReactTable({
-    data: paginatedData,
+    data: mappedData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -258,7 +270,14 @@ export function AssociatesTable() {
     },
   });
 
-  const totalPages = Math.ceil(mappedData.length / PAGE_SIZE) || 1;
+  const totalItems = associatesFetchData?.meta?.total_items || 0;
+  const currentMetaPage = associatesFetchData?.meta?.page || currentPage;
+  const perPage = associatesFetchData?.meta?.per_page || PAGE_SIZE;
+
+  const startItem = totalItems === 0 ? 0 : (currentMetaPage - 1) * perPage + 1;
+  const endItem = Math.min(currentMetaPage * perPage, totalItems);
+
+  const totalPages = associatesFetchData?.meta?.total_pages || 1;
 
   return (
     <div className="w-full">
@@ -281,17 +300,41 @@ export function AssociatesTable() {
             ))}
           </TableHeader>
           <TableBody>
-            <MemoizedTableBody rows={table.getRowModel().rows} loading={associateFetchLoading} />
+            <MemoizedTableBody rows={table.getRowModel().rows} loading={isLoading || isFetching} />
           </TableBody>
           <TableFooter>
             <TableRow>
               <TableCell colSpan={columns.length} className="px-4 py-4 text-sm font-light text-gray-700">
-                Mostrando {paginatedData.length} de {mappedData.length} associados
+                <div className="flex justify-between items-center">
+                  <span>
+                    Mostrando {startItem}-{endItem} de {totalItems} associados
+                  </span>
+                  <div className="flex justify-end mt-2 gap-2">
+                    <Button
+                      variant="primary"
+                      disabled={currentMetaPage <= 1}
+                      onClick={() => setCurrentPage((prev) => prev - 1)}
+                    >
+                      Anterior
+                    </Button>
+                    <span className="flex items-center px-2">
+                      {currentMetaPage} / {totalPages}
+                    </span>
+                    <Button
+                      variant="primary"
+                      disabled={currentMetaPage >= totalPages}
+                      onClick={() => setCurrentPage((prev) => prev + 1)}
+                    >
+                      Próxima
+                    </Button>
+                  </div>
+                </div>
               </TableCell>
             </TableRow>
           </TableFooter>
         </Table>
       </div>
+  
     </div>
   )
 }

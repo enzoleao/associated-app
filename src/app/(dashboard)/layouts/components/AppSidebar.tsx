@@ -21,6 +21,8 @@ import { NavMain } from "./NavMain"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useUser } from "@/contexts/UserContext"
+import { useTenantInformations } from "@/hooks/useTenantInformations"
+import { useEffect } from "react"
 
 const data = {
   navMain: [
@@ -58,37 +60,45 @@ const tenant = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar()
-  const { isLoading } = useUser()
+  const [tenantId, setTenantId] = React.useState<string | null>(null)
 
+
+  const { data: tenantInformationsData, isLoading: isLoadingTenantInformations } = useTenantInformations(tenantId || "");
+  useEffect(() => {
+    const storedTenantId = localStorage.getItem("identification")
+    setTenantId(storedTenantId)
+  }, [])
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex flex-col justify-center items-center gap-4">
-            {isLoading ? (
-              <Skeleton className="h-[60px] w-[60px] rounded-full" />
-            ) : (
+            {isLoadingTenantInformations ? (
+  <Skeleton className="h-[60px] w-[60px] rounded-full" />
+            ) : tenantInformationsData?.logo_image ? (
               <Image 
-                src="https://bucket-production-eaf6.up.railway.app/associated-production/public%2Flogos%2Flogo_idea_2025.png"
+                src={tenantInformationsData.logo_image}
                 height={60}
                 width={60}
                 alt="logo"
               />
+            ) : (
+              <Skeleton className="h-[60px] w-[60px] rounded-full" /> 
             )}
 
             {open && (
-              isLoading ? (
+              isLoadingTenantInformations ? (
                 <Skeleton className="h-4 w-48 rounded-full" />
               ) : (
-                <span className="text-center font-medium">{tenant.name}</span>
+                <span className="text-center font-medium">{tenantInformationsData?.name}</span>
               )
             )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="pt-4">
-        {isLoading ? (
+        {isLoadingTenantInformations ? (
           <div className="flex flex-col gap-2 px-2">
             {data.navMain.map((_, idx) => (
               <Skeleton key={idx} className="h-10 w-full rounded" />

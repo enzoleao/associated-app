@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 interface LoginParams {
   email: string;
   password: string;
+  tenant_id: string;
 }
 
 interface LoginResponse {
@@ -14,11 +15,11 @@ interface LoginResponse {
   messages?: any[];
 }
 
-export async function login({ email, password }: LoginParams): Promise<LoginResponse> {
+export async function login({ email, password, tenant_id }: LoginParams): Promise<LoginResponse> {
   try {
     const res = await fetch(`${process.env.API_URL}/auth/signin`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "tenant_id": tenant_id },
       body: JSON.stringify({ email, password }),
       cache: "no-store",
     });

@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 
 interface LoginParams {
   email: string;
+  tenant_id: string;
 }
 
 interface LoginResponse {
@@ -13,14 +14,15 @@ interface LoginResponse {
   messages?: []
 }
 
-export async function forgetPassword({ email }: LoginParams): Promise<LoginResponse> {
+export async function forgetPassword({ email, tenant_id }: LoginParams): Promise<LoginResponse> {
   try {
     const res = await fetch(`${process.env.API_URL}/auth/forget-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, tenant_id }),
       cache: "no-store",
     });
+    console.log(res)
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => null);

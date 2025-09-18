@@ -53,7 +53,7 @@ export function AssociatesReport({}: AssociatesReportProps) {
       id: 3,
       name: 'Total de Dependentes',
       icon: IconUsersGroup,
-      value: 0,
+      value: associatesReportFetchData?.total_dependents,
       value_type: 'FIXED',
       background_color: 'bg-purple-100',
       color: 'text-purple-400',

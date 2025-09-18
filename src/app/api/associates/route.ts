@@ -8,10 +8,14 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search_term = searchParams.get("search_term") || "";
     const associate_status_id = searchParams.get("associate_status_id") || "";
+    const page = searchParams.get("page") || "1";
+    const per_page = searchParams.get("per_page") || "10";
 
     const queryParams = new URLSearchParams();
     if (search_term) queryParams.append("search_term", search_term);
     if (associate_status_id) queryParams.append("associate_status_id", associate_status_id);
+    queryParams.append("page", page);
+    queryParams.append("per_page", per_page);
 
     const res = await fetch(
       `${process.env.API_URL}/associates?${queryParams.toString()}`,

@@ -20,17 +20,19 @@ type LoginFormInputs = {
 export function LoginForm() {
   const router = useRouter();
   const { login: setUser } = useUser();
-
+  
+  
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormInputs>();
-
+  
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
+    const tenantId = localStorage.getItem("tenantId"); 
     try {
-      const res = await serverLogin(data);
+      const res = await serverLogin({ ...data, tenant_id: tenantId || "" });
 
       if (res?.error) {
         if (res.messages) {

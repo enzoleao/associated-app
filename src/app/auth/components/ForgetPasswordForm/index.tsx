@@ -26,9 +26,10 @@ export function ForgetPasswordForm() {
   } = useForm<LoginFormInputs>();
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
+     const tenantId = localStorage.getItem("tenantId"); 
     try {
       showLoading()
-      await forgetPassword(data);
+      await forgetPassword({ ...data, tenant_id: tenantId || "" });
       hideLoading()
       setSuccess(true);
     } catch (err) {
