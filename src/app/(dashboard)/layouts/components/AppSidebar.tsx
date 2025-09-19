@@ -8,7 +8,6 @@ import {
   IconChartBar,
   IconLayoutDashboard
 } from "@tabler/icons-react"
-
 import {
   Sidebar,
   SidebarContent,
@@ -20,7 +19,6 @@ import {
 import { NavMain } from "./NavMain"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useUser } from "@/contexts/UserContext"
 import { useTenantInformations } from "@/hooks/useTenantInformations"
 import { useEffect } from "react"
 
@@ -54,9 +52,7 @@ const data = {
   ],
 }
 
-const tenant = {
-  name: 'INSTITUTO DE DEFESA, AMPARO JURÍDICO E SOCIAL DO ESTADO DO PARÁ'
-}
+
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar()

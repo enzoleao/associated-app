@@ -11,6 +11,10 @@ interface User {
   email: string;
   initials: string
   color: string | null
+  role: {
+    id: string;
+    name: string;
+  };
 }
 
 interface UserContextType {

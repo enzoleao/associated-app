@@ -33,5 +33,5 @@ export default function TenantRedirectPage({ params }: TenantRedirectPageProps) 
     loadTenant();
   }, [tenantId, router]);
 
-  return <p>Carregando informações do tenant...</p>;
+  return null;
 }

@@ -2,9 +2,12 @@
 
 import * as React from "react";
 import {
+  IconChevronDown,
   IconCreditCard,
   IconLogout,
   IconNotification,
+  IconSettings,
+  IconUser,
   IconUserCircle,
 } from "@tabler/icons-react";
 
@@ -27,6 +30,7 @@ import {
 import { Avatar } from "./Avatar";
 import { useUser } from "@/contexts/UserContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 
 
 export function NavUser() {
@@ -42,12 +46,21 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="hover:bg-white flex items-center justify-center"
+              className=" flex items-center justify-center cursor-pointer"
             >
               {isLoading ? (
                 <Skeleton className="h-10 w-10 rounded-full" />
               ) : (
-                <Avatar initials={user?.initials} color={user?.color} />
+                <div className="flex gap-3 p-2 items-center min-w-[165px] justify-between select-none">
+                  <div className="flex gap-3 items-center">
+                    <Avatar initials={user?.initials} color={user?.color} />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-900">{user?.name.split(" ")[0]}</span>
+                      <span className="text-xs text-gray-500">{user?.role.name}</span>
+                    </div>
+                  </div>
+                  <IconChevronDown size={16}/>
+                </div>
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -60,30 +73,33 @@ export function NavUser() {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user?.name}</span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user?.email}
-                  </span>
+                <div className="grid flex-1 text-left text-sm leading-tight gap-1.5">
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-medium">{user?.name}</span>
+                    <span className="text-muted-foreground truncate text-xs">
+                      {user?.email}
+                    </span>
+                  </div>
+                  <Badge className="h-5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">Administrador</Badge>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {/* <DropdownMenuGroup>
-              <DropdownMenuItem>
+            <DropdownMenuGroup>
+              {/* <DropdownMenuItem>
                 <IconUserCircle />
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconCreditCard />
                 Billing
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem>
-                <IconNotification />
-                Notifications
+                <IconUser />
+                Minha Conta
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator /> */}
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={logout} variant="destructive">
               <IconLogout />
               Sair

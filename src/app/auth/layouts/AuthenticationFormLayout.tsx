@@ -31,7 +31,6 @@ export default function AuthenticationFormLayout({ children }: AuthLayoutProps) 
     }
   }, [mounted, pathname, showLoading, hideLoading]);
 
-  // Evita renderização no servidor
   if (!mounted) return null;
 
   return (
