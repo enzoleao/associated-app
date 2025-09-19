@@ -18,5 +18,6 @@ export const useTenantInformations = (information?: string) => {
     },
     enabled: !!information, 
     staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 };

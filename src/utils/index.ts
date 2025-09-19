@@ -44,3 +44,22 @@ export function getBadgeClasses(color: string) {
   const bgColor = `bg-${color}-100`;
   return `${textColor} ${bgColor}`;
 }
+
+export function validatePermission(menus: any[], permissionName: string): boolean {
+  if (!Array.isArray(menus)) return false;
+
+  console.log(menus)
+  return menus.some(menu => {
+    const permissions = menu.resource?.permissions || [];
+    const hasPermission = permissions.some((p: { name: string; }) => p.name === permissionName);
+
+    const subMenus = menu.subMenus || [];
+    const subMenuHasPermission = subMenus.some((sub: { resource: { permissions: any; }; }) => {
+      const subPermissions = sub.resource?.permissions || [];
+      return subPermissions.some((p: { name: string; }) => p.name === permissionName);
+    });
+
+    return hasPermission || subMenuHasPermission;
+  });
+}
+

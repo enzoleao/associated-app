@@ -1,7 +1,7 @@
 "use client"
 import { useQuery } from "@tanstack/react-query";
 
-export const useStates = () => {
+export const useStates = (options?: {enabled?: boolean}) => {
   const queryKey = ["country-states"];
 
   const queryResult = useQuery({
@@ -19,6 +19,7 @@ export const useStates = () => {
       return res.json();
     },
     staleTime: 5 * 1000,
+    ...options,
   });
 
   return queryResult;

@@ -1,7 +1,7 @@
 "use client"
 import { useQuery } from "@tanstack/react-query";
 
-export const useAssociateStatus = () => {
+export const useAssociateStatus = (options?: { enabled?: boolean }) => {
   const queryKey = ["associate-status"];
 
   const queryResult = useQuery({
@@ -19,6 +19,7 @@ export const useAssociateStatus = () => {
       return res.json();
     },
     staleTime: 5 * 1000,
+    enabled: options?.enabled ?? true,
   });
 
   return queryResult;

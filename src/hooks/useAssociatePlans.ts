@@ -1,7 +1,7 @@
 "use client"
 import { useQuery } from "@tanstack/react-query";
 
-export const useAssociatePlans = () => {
+export const useAssociatePlans = (options?: {enabled?: boolean}) => {
   const queryKey = ["associate-plans"];
 
   const queryResult = useQuery({
@@ -19,6 +19,7 @@ export const useAssociatePlans = () => {
       return res.json();
     },
     staleTime: 5 * 1000,
+    enabled: options?.enabled ?? true,
   });
 
   return queryResult;

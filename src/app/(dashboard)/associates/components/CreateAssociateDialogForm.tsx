@@ -66,10 +66,11 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { showLoading, hideLoading } = useLoading();
 
-  const { data: paymentMethods } = usePaymentMethods()
-  const { data: associatePlans } = useAssociatePlans()
-  const { data: countryStates } = useStates()
-  const { data: associateStatus } = useAssociateStatus()
+  const { data: paymentMethods } = usePaymentMethods({ enabled: open });
+  const { data: associatePlans } = useAssociatePlans({ enabled: open });
+  const { data: countryStates } = useStates({ enabled: open });
+  const { data: associateStatus } = useAssociateStatus({ enabled: open });
+
   
 
   const { control, handleSubmit, reset, setValue, watch, setError, formState: { errors } } = useForm<CreateAssociateFormValues>({

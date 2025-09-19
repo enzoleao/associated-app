@@ -15,13 +15,14 @@ import {
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { formatCpfCnpj, formatToDDMMYYYY } from "@/utils"
+import { formatCpfCnpj, formatToDDMMYYYY, validatePermission } from "@/utils"
 import { IconEye, IconPencilMinus, IconTrash } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import { useAssociates } from "@/hooks/useAssociates"
 import { useState, useMemo, useEffect } from "react"
 import { useFilters } from "@/contexts/FilterContext"
 import { DependentsModal } from "./DependentsModal"
+import { useMenus } from "@/hooks/useMenu"
 
 export function getBadgeClasses(color: string) {
   switch(color) {
@@ -36,7 +37,87 @@ export function getBadgeClasses(color: string) {
   }
 }
 
-export const columns: ColumnDef<any>[] = [
+
+const PAGE_SIZE = 10;
+
+const MemoizedTableBody = React.memo(function MemoizedTableBody({
+  rows,
+  loading
+}: {
+  rows: any[];
+  loading: boolean;
+}) {
+  if (loading) {
+    return (
+      <>
+        {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+          <TableRow key={i} className="h-[85px]">
+            <TableCell className="px-4 py-3 w-[420px]">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
+                <div className="flex flex-col gap-1">
+                  <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="h-3 w-40 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </TableCell>
+            <TableCell className="px-4 py-3 w-[102px]">
+              <div className="h-5 w-14 bg-gray-200 rounded-full animate-pulse"></div>
+            </TableCell>
+            <TableCell className="px-4 py-3 w-[98px]">
+              <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+            </TableCell>
+            <TableCell className="px-4 py-3 max-w-[150px]">
+              <div className="h-4 w-6 bg-gray-200 rounded animate-pulse"></div>
+            </TableCell>
+            <TableCell className="px-4 py-3">
+              <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+            </TableCell>
+            <TableCell className="px-4 py-3">
+              <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+            </TableCell>
+            <TableCell className="flex gap-2 px-4 py-3 mt-3">
+              <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
+              <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
+              <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </>
+    );
+  }
+  return (
+    <>
+      {rows.map((row) => (
+        <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="h-[85px]">
+          {row.getVisibleCells().map((cell: { id: React.Key | null | undefined; column: { columnDef: { cell: string | number | bigint | boolean | React.ComponentType<any> | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined } }; getContext: () => any }) => (
+            <TableCell key={cell.id} className="px-4 py-3 text-sm text-gray-600">
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </>
+  );
+});
+
+export function AssociatesTable() {
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { searchTerm, associateStatusId } = useFilters();
+  const { data: associatesFetchData, isLoading, isFetching } = useAssociates({
+    search_term: searchTerm,
+    associate_status_id: associateStatusId,
+    page: currentPage,
+    per_page: PAGE_SIZE,
+  });
+  const { data: menuData, isLoading: permissionLoading } = useMenus()
+  const columns: ColumnDef<any>[] = [
   {
     id: "associated",
     header: "ASSOCIADO",
@@ -127,107 +208,38 @@ export const columns: ColumnDef<any>[] = [
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex gap-2">
+        {!isLoading && validatePermission(menuData, 'associates.update') && (
         <Button
           onClick={() => console.log(row.original)}
           className="w-7 h-7 bg-transparent shadow-none text-blue-500 hover:bg-blue-100"
         >
           <IconEye />
         </Button>
-        <Button
-          onClick={() => console.log(row.original)}
-          className="w-7 h-7 bg-transparent shadow-none text-yellow-500 hover:bg-yellow-100"
-        >
-          <IconPencilMinus />
-        </Button>
-        <Button
-          onClick={() => console.log(row.original)}
-          className="w-7 h-7 bg-transparent shadow-none text-red-500 hover:bg-red-100"
-        >
-          <IconTrash />
-        </Button>
+
+        )
+        }
+         {!isLoading && validatePermission(menuData, 'associates.update') && (
+          <Button
+            onClick={() => console.log(row.original)}
+            className="w-7 h-7 bg-transparent shadow-none text-yellow-500 hover:bg-yellow-100"
+          >
+            <IconPencilMinus />
+          </Button>
+         )
+         }
+        {!isLoading && validatePermission(menuData, 'associates.delete') && (
+          <Button
+            onClick={() => console.log(row.original)}
+            className="w-7 h-7 bg-transparent shadow-none text-red-500 hover:bg-red-100"
+          >
+            <IconTrash />
+          </Button>
+        )}
       </div>
     ),
   },
 ]
 
-const PAGE_SIZE = 10;
-
-const MemoizedTableBody = React.memo(function MemoizedTableBody({
-  rows,
-  loading
-}: {
-  rows: any[];
-  loading: boolean;
-}) {
-  if (loading) {
-    return (
-      <>
-        {Array.from({ length: PAGE_SIZE }).map((_, i) => (
-          <TableRow key={i} className="h-[85px]">
-            <TableCell className="px-4 py-3 w-[420px]">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
-                <div className="flex flex-col gap-1">
-                  <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="h-3 w-40 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-              </div>
-            </TableCell>
-            <TableCell className="px-4 py-3 w-[102px]">
-              <div className="h-5 w-14 bg-gray-200 rounded-full animate-pulse"></div>
-            </TableCell>
-            <TableCell className="px-4 py-3 w-[98px]">
-              <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
-            </TableCell>
-            <TableCell className="px-4 py-3 max-w-[150px]">
-              <div className="h-4 w-6 bg-gray-200 rounded animate-pulse"></div>
-            </TableCell>
-            <TableCell className="px-4 py-3">
-              <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
-            </TableCell>
-            <TableCell className="px-4 py-3">
-              <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
-            </TableCell>
-            <TableCell className="flex gap-2 px-4 py-3 mt-3">
-              <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
-              <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
-              <div className="h-7 w-7 bg-gray-200 rounded-full animate-pulse"></div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </>
-    );
-  }
-  return (
-    <>
-      {rows.map((row) => (
-        <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="h-[85px]">
-          {row.getVisibleCells().map((cell: { id: React.Key | null | undefined; column: { columnDef: { cell: string | number | bigint | boolean | React.ComponentType<any> | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined } }; getContext: () => any }) => (
-            <TableCell key={cell.id} className="px-4 py-3 text-sm text-gray-600">
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </TableCell>
-          ))}
-        </TableRow>
-      ))}
-    </>
-  );
-});
-
-export function AssociatesTable() {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState({})
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const { searchTerm, associateStatusId } = useFilters();
-  const { data: associatesFetchData, isLoading, isFetching } = useAssociates({
-    search_term: searchTerm,
-    associate_status_id: associateStatusId,
-    page: currentPage,
-    per_page: PAGE_SIZE,
-  });
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, associateStatusId]);

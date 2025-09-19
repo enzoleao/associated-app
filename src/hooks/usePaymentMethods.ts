@@ -1,7 +1,7 @@
 "use client"
 import { useQuery } from "@tanstack/react-query";
 
-export const usePaymentMethods = () => {
+export const usePaymentMethods = (options?: {enabled?: boolean}) => {
   const queryKey = ["payment-methods"];
 
   const queryResult = useQuery({
@@ -19,6 +19,7 @@ export const usePaymentMethods = () => {
       return res.json();
     },
     staleTime: 5 * 1000,
+    enabled: options?.enabled ?? true,
   });
 
   return queryResult;
