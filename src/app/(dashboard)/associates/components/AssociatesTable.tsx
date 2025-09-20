@@ -16,13 +16,16 @@ import {
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { formatCpfCnpj, formatToDDMMYYYY, validatePermission } from "@/utils"
-import { IconEye, IconPencilMinus, IconTrash } from "@tabler/icons-react"
+import { IconEye, IconFileText, IconPencilMinus, IconTrash } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import { useAssociates } from "@/hooks/useAssociates"
 import { useState, useMemo, useEffect } from "react"
 import { useFilters } from "@/contexts/FilterContext"
 import { DependentsModal } from "./DependentsModal"
 import { useMenus } from "@/hooks/useMenu"
+import { AssociateInformationDialog } from "./AssociateInformationDialog"
+import { useLoading } from "@/contexts/LoadingContext"
+import { downloadProfilePdfReport } from "./actions"
 
 export function getBadgeClasses(color: string) {
   switch(color) {
@@ -108,6 +111,13 @@ export function AssociatesTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [currentPage, setCurrentPage] = useState(1);
+  const {showLoading, hideLoading} = useLoading()
+
+  async function sendAndDownload(name: string, associatedId: string) {
+    showLoading()
+    await downloadProfilePdfReport(name, associatedId);
+    hideLoading()
+  }
 
   const { searchTerm, associateStatusId } = useFilters();
   const { data: associatesFetchData, isLoading, isFetching } = useAssociates({
@@ -209,15 +219,21 @@ export function AssociatesTable() {
     cell: ({ row }) => (
       <div className="flex gap-2">
         {!isLoading && validatePermission(menuData, 'associates.update') && (
-        <Button
-          onClick={() => console.log(row.original)}
-          className="w-7 h-7 bg-transparent shadow-none text-blue-500 hover:bg-blue-100"
-        >
-          <IconEye />
-        </Button>
+          <AssociateInformationDialog associateId={row.original.id}>
+            <Button
+              className="w-7 h-7 bg-transparent shadow-none text-blue-500 hover:bg-blue-100"
+            >
+              <IconEye />
+            </Button>
+          </AssociateInformationDialog>
 
         )
         }
+        {!isLoading && validatePermission(menuData, 'associates.delete') && (
+          <Button className="w-7 h-7 bg-transparent shadow-none text-purple-500 hover:bg-purple-100" onClick={()=> sendAndDownload(row?.original.name, row?.original.id)}>
+            <IconFileText />
+          </Button>
+        )}
          {!isLoading && validatePermission(menuData, 'associates.update') && (
           <Button
             onClick={() => console.log(row.original)}
@@ -235,10 +251,19 @@ export function AssociatesTable() {
             <IconTrash />
           </Button>
         )}
+        
       </div>
     ),
   },
-]
+  ]
+  const filteredColumns: ColumnDef<any>[] = useMemo(() => {
+  return columns.filter((col: any) => {
+     if (col.accessorKey === "dependents_count") {
+      return validatePermission(menuData, "dependents.associate.read");
+    }
+    return true;
+  });
+}, [columns, menuData, permissionLoading]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -265,7 +290,7 @@ export function AssociatesTable() {
 
   const table = useReactTable({
     data: mappedData,
-    columns,
+    columns: filteredColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

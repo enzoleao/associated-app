@@ -27,7 +27,11 @@ export function formatToDDMMYYYY(dateStr: string): string {
   return `${day}/${month}/${year}`;
 }
 
-export function formatCpfCnpj(value: string): string {
+export function formatCpfCnpj(value?: string | null): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
   const onlyNumbers = value.replace(/\D/g, "");
 
   if (onlyNumbers.length === 11) {
@@ -39,6 +43,7 @@ export function formatCpfCnpj(value: string): string {
   return value;
 }
 
+
 export function getBadgeClasses(color: string) {
   const textColor = `text-${color}-500`;
   const bgColor = `bg-${color}-100`;
@@ -47,8 +52,6 @@ export function getBadgeClasses(color: string) {
 
 export function validatePermission(menus: any[], permissionName: string): boolean {
   if (!Array.isArray(menus)) return false;
-
-  console.log(menus)
   return menus.some(menu => {
     const permissions = menu.resource?.permissions || [];
     const hasPermission = permissions.some((p: { name: string; }) => p.name === permissionName);
@@ -63,3 +66,26 @@ export function validatePermission(menus: any[], permissionName: string): boolea
   });
 }
 
+
+export const formatPhoneNumber = (number?: string | null): string => {
+  if (typeof number !== 'string') {
+    return '';
+  }
+
+  const digits = number.replace(/\D/g, '');
+
+  if (digits.length === 11) {
+    const areaCode = digits.slice(0, 2);
+    const nineDigit = digits.slice(2, 3);
+    const part1 = digits.slice(3, 7);
+    const part2 = digits.slice(7);
+    return `(${areaCode}) ${nineDigit} ${part1}-${part2}`;
+  } else if (digits.length === 10) {
+    const areaCode = digits.slice(0, 2);
+    const part1 = digits.slice(2, 6);
+    const part2 = digits.slice(6);
+    return `(${areaCode}) ${part1}-${part2}`;
+  } else {
+    return number; // or 'Invalid number' if you prefer
+  }
+};

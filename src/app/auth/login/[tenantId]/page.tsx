@@ -1,37 +1,14 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { useEffect, use } from "react";
+import { TenantRedirectPage } from "./components/LoadingComponent";
 
 interface TenantRedirectPageProps {
   params: Promise<{ tenantId: string }>;
 }
 
-export default function TenantRedirectPage({ params }: TenantRedirectPageProps) {
-  const router = useRouter();
-  const { tenantId } = use(params); 
+export const metadata = {
+  title: `Login | ${process.env.PUBLIC_APPLICATION_NAME}`,
+  description: `Página de autenticação do ${process.env.PUBLIC_APPLICATION_NAME}`,
+}
 
-  useEffect(() => {
-    const loadTenant = async () => {
-      try {
-        const res = await fetch(`/api/tenant-informations/${tenantId}`);
-        if (!res.ok) {
-          router.replace("/auth/login");
-          return;
-        }
-
-        const tenant = await res.json();
-        localStorage.setItem("tenantId", tenant.id);
-        localStorage.setItem("identification", tenant.identification);
-        router.replace("/auth/login");
-      } catch (err) {
-        console.error(err);
-        router.replace("/auth/login");
-      }
-    };
-
-    loadTenant();
-  }, [tenantId, router]);
-
-  return null;
+export default function LoginLoading({ params }: TenantRedirectPageProps) {
+  return <TenantRedirectPage  params={params}/>;
 }

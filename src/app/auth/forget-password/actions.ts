@@ -22,7 +22,6 @@ export async function forgetPassword({ email, tenant_id }: LoginParams): Promise
       body: JSON.stringify({ email, tenant_id }),
       cache: "no-store",
     });
-    console.log(res)
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => null);

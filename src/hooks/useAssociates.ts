@@ -48,7 +48,7 @@ export const useAssociates = ({
 
       return res.json();
     },
-    staleTime: 5000,
+    staleTime: 5 * 60 * 1000,
     placeholderData: (previousData) => previousData, 
 
   });

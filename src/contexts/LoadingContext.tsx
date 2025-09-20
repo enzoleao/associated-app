@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 interface LoadingContextType {
   showLoading: (message?: string) => void;
   hideLoading: () => void;
+  loading: boolean;
 }
 
 const LoadingContext = createContext<LoadingContextType | undefined>(undefined);
@@ -47,7 +48,7 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) =>
   }, [isLoading]);
 
   return (
-    <LoadingContext.Provider value={{ showLoading, hideLoading }}>
+    <LoadingContext.Provider value={{ showLoading, hideLoading, loading: isLoading }}>
       {children}
 
       {isLoading && (

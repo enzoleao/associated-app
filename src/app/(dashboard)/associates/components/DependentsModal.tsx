@@ -40,7 +40,9 @@ export function DependentsModal({
         if (isOpen && associateId) setCurrentAssociated(associateId);
       }}
     >
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        {children}
+        </DialogTrigger>
       <DialogContent className="sm:max-w-3xl"   
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}

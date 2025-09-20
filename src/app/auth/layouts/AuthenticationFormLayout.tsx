@@ -10,28 +10,37 @@ interface AuthLayoutProps {
 }
 
 export default function AuthenticationFormLayout({ children }: AuthLayoutProps) {
-  const [mounted, setMounted] = useState(false); // para evitar mismatch SSR
-  const { showLoading, hideLoading } = useLoading();
+  const [mounted, setMounted] = useState(false);
+  const { loading, showLoading, hideLoading } = useLoading(); // 👈 precisa ter "loading" no contexto
   const pathname = usePathname();
 
+  const isTenantLoginRoute = /^\/auth\/login\/[^/]+$/.test(pathname);
+
   useEffect(() => {
-    setMounted(true); // componente montou
+    setMounted(true);
     window.scrollTo(0, 0);
   }, [pathname]);
 
   useEffect(() => {
     if (!mounted) return;
 
-    const isTenantLoginRoute = /^\/auth\/login\/[^/]+$/.test(pathname);
     if (isTenantLoginRoute) {
       showLoading();
       return () => hideLoading();
     } else {
       hideLoading();
     }
-  }, [mounted, pathname, showLoading, hideLoading]);
+  }, [mounted, pathname, isTenantLoginRoute, showLoading, hideLoading]);
 
   if (!mounted) return null;
+
+  if (isTenantLoginRoute && loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="loader" /> {/* substitua pelo seu spinner */}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
