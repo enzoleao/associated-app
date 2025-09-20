@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 export async function GET(
   request: NextRequest,
-  context: any // 👈 forçamos para evitar conflito de Promise<>
+  context: any 
 ) {
   const { associatedId } = context.params as { associatedId: string };
 
