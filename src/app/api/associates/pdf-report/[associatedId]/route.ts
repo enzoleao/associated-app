@@ -1,25 +1,29 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { cookies } from "next/headers";
 
-export async function GET(req: Request, context: { params: { associatedId: string } }) {
-  try {
-    const { associatedId } = await context.params;
+export async function GET(
+  request: NextRequest,
+  context: any // 👈 forçamos para evitar conflito de Promise<>
+) {
+  const { associatedId } = context.params as { associatedId: string };
 
+  try {
     const token = (await cookies()).get("token")?.value;
 
-    console.log("associatedId:", associatedId);
-
-    const externalResponse = await fetch(`${process.env.API_URL}/associates/pdf-report/${associatedId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token ?? ''}`, 
-      },
-    });
+    const externalResponse = await fetch(
+      `${process.env.API_URL}/associates/pdf-report/${associatedId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token ?? ""}`,
+        },
+      }
+    );
 
     if (!externalResponse.ok) {
       return NextResponse.json(
-        { error: 'Erro na API externa' },
+        { error: "Erro na API externa" },
         { status: externalResponse.status }
       );
     }
@@ -29,14 +33,16 @@ export async function GET(req: Request, context: { params: { associatedId: strin
     return new NextResponse(Buffer.from(dataBuffer), {
       status: 200,
       headers: {
-        'Content-Disposition': 'attachment; filename="arquivo.pdf"', // Ajuste a extensão conforme o arquivo
-        'Content-Type': externalResponse.headers.get('content-type') || 'application/octet-stream',
+        "Content-Disposition": 'attachment; filename="arquivo.pdf"',
+        "Content-Type":
+          externalResponse.headers.get("content-type") ||
+          "application/octet-stream",
       },
     });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: 'Erro interno no servidor' },
+      { error: "Erro interno no servidor" },
       { status: 500 }
     );
   }
