@@ -26,6 +26,9 @@ import { useMenus } from "@/hooks/useMenu"
 import { AssociateInformationDialog } from "./AssociateInformationDialog"
 import { useLoading } from "@/contexts/LoadingContext"
 import { downloadProfilePdfReport } from "./actions"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { TooltipComponent } from "@/components/Tooltip"
+import { UpdateAssociateDialogForm } from "./UpdateAssociateDialogForm"
 
 export function getBadgeClasses(color: string) {
   switch(color) {
@@ -188,13 +191,13 @@ export function AssociatesTable() {
     cell: ({ row }) => (
       <div className="text-start flex items-center gap-2">
         {row.original.dependents_count ?? 0}
-        <DependentsModal associateId={row.original.associate.id}>
-          <Button
-            className="w-7 h-7 bg-transparent shadow-none text-blue-500 hover:bg-blue-100"
-          >
-            <IconEye />
-          </Button>
-        </DependentsModal>
+          <DependentsModal associateId={row.original.associate.id}>
+            <Button
+              className="w-7 h-7 bg-transparent shadow-none text-blue-500 hover:bg-blue-100"
+            >
+              <IconEye />
+            </Button>
+          </DependentsModal>
       </div>
     ),
   },
@@ -230,17 +233,20 @@ export function AssociatesTable() {
         )
         }
         {!isLoading && validatePermission(menuData, 'associates.delete') && (
-          <Button className="w-7 h-7 bg-transparent shadow-none text-purple-500 hover:bg-purple-100" onClick={()=> sendAndDownload(row?.original.name, row?.original.id)}>
-            <IconFileText />
-          </Button>
+          <TooltipComponent title="Exportar associado em PDF">
+            <Button className="w-7 h-7 bg-transparent shadow-none text-purple-500 hover:bg-purple-100" onClick={()=> sendAndDownload(row?.original.name, row?.original.id)}>
+              <IconFileText />
+            </Button>
+          </TooltipComponent>
         )}
          {!isLoading && validatePermission(menuData, 'associates.update') && (
-          <Button
-            onClick={() => console.log(row.original)}
-            className="w-7 h-7 bg-transparent shadow-none text-yellow-500 hover:bg-yellow-100"
-          >
-            <IconPencilMinus />
-          </Button>
+          <UpdateAssociateDialogForm associateId={row.original.id}>
+            <Button
+              className="w-7 h-7 bg-transparent shadow-none text-yellow-500 hover:bg-yellow-100"
+            >
+              <IconPencilMinus />
+            </Button>
+          </UpdateAssociateDialogForm>
          )
          }
         {!isLoading && validatePermission(menuData, 'associates.delete') && (

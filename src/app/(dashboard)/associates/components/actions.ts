@@ -21,13 +21,6 @@ export function formatDateForFilename(date: Date = new Date()): string {
 }
 
 
-/**
- * Faz download do arquivo PDF de uma URL que retorna o blob.
- * 
- * @param baseName Nome base para o arquivo (ex: 'ENZO GABRIEL')
- * @param associatedId ID para montar a URL da API
- * @param urlBase Base da URL da API para buscar o arquivo
- */
 export async function downloadProfilePdfReport(baseName: string, associatedId: string) {
 
   const response = await fetch(`/api/associates/pdf-report/${associatedId}`, {

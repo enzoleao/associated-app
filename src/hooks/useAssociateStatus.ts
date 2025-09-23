@@ -9,7 +9,6 @@ export const useAssociateStatus = (options?: { enabled?: boolean }) => {
     queryFn: async () => {
       const res = await fetch("/api/associate-status", {
         method: "GET",
-        cache: "no-store",
       });
 
       if (!res.ok) {
@@ -18,8 +17,10 @@ export const useAssociateStatus = (options?: { enabled?: boolean }) => {
 
       return res.json();
     },
-    staleTime: 5 * 1000,
+    staleTime: 5 * 60 * 1000,
     enabled: options?.enabled ?? true,
+    refetchOnWindowFocus: false,
+
   });
 
   return queryResult;

@@ -1,14 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { IconCamera, IconPencilMinus, IconX } from "@tabler/icons-react";
 
 interface InputFileProps {
   onFileSelect?: (file: File | null) => void;
+  initialImage?: string | null; // <- imagem vinda da API
 }
 
-export function InputFile({ onFileSelect }: InputFileProps) {
+export function InputFile({ onFileSelect, initialImage }: InputFileProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [fileType, setFileType] = useState<string | null>(null);
+
+  // quando receber a imagem inicial, já mostra no preview
+  useEffect(() => {
+    if (initialImage) {
+      setImagePreview(initialImage);
+    }
+  }, [initialImage]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

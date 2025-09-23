@@ -65,6 +65,7 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { showLoading, hideLoading } = useLoading();
+  const [isLoadingZipcode, setIsLoadingZipcode] = useState(false)
 
   const { data: paymentMethods } = usePaymentMethods({ enabled: open });
   const { data: associatePlans } = useAssociatePlans({ enabled: open });
@@ -83,12 +84,14 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
     const numericCEP = cepValue.replace(/\D/g, "");
     if (numericCEP.length === 8) {
       (async () => {
+        setIsLoadingZipcode(true)
         const res = await getAddressByCEP({cep: cepValue});
         setValue("street", res.data?.logradouro || "");
         setValue("neighborhood", res.data?.bairro || "");
         setValue("city", res.data?.localidade || "");
         const stateOption = countryStates?.find((s: { initials: string | undefined; }) => s.initials === res.data?.uf);
         if (stateOption) setValue("state_id", stateOption.id.toString());
+        setIsLoadingZipcode(false)
       })();
     }
   }, [cepValue, setValue]);
@@ -218,7 +221,7 @@ export function CreateAssociateDialogForm({ children }: CreateAssociateDialogFor
           <div className="space-y-3 rounded-lg border p-6">
             <h2 className="text-lg font-medium text-gray-900">Endereço</h2>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <ControlledMaskedInput control={control} name="zip_code" label="CEP" mask="_____-___" placeholder="00000-000" rules={{ required: "CEP é obrigatório" }} />
+              <ControlledMaskedInput loading={isLoadingZipcode} control={control} name="zip_code" label="CEP" mask="_____-___" placeholder="00000-000" rules={{ required: "CEP é obrigatório" }} />
               <ControlledInput control={control} name="street" label="Rua/Avenida" placeholder="Rua, avenida, etc ..." rules={{ required: "Rua/Avenida é obrigatório" }} />
               <ControlledInput control={control} name="number" label="Número" placeholder="Nº" />
             </div>

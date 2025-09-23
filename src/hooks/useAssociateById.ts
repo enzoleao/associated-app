@@ -7,7 +7,6 @@ export const useAssociateById = (associatedId?: string) => {
     queryFn: async () => {
       const res = await fetch(`/api/associates/${associatedId}`, {
         method: "GET",
-        cache: "no-store",
       });
 
       if (!res.ok) {
@@ -17,5 +16,7 @@ export const useAssociateById = (associatedId?: string) => {
     },
     enabled: !!associatedId,
     staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+
   });
 };

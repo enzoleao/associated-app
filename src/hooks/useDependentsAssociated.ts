@@ -8,7 +8,6 @@ export const useDependentsAssociated = (associatedId?: string) => {
       if (!associatedId) return [];
       const res = await fetch(`/api/dependents/${associatedId}`, {
         method: "GET",
-        cache: "no-store",
       });
 
       if (!res.ok) {
@@ -18,5 +17,7 @@ export const useDependentsAssociated = (associatedId?: string) => {
     },
     enabled: !!associatedId, // só busca se tiver ID
     staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+
   });
 };

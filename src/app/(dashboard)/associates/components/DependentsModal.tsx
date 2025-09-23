@@ -12,21 +12,19 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { IconDeviceFloppy } from "@tabler/icons-react";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDependentsAssociated } from "@/hooks/useDependentsAssociated";
 import { formatCpfCnpj, formatToDDMMYYYY } from "@/utils";
 
-interface CreateAssociateDialogFormProps {
+interface DependentsModalProps {
   children: ReactNode;
   associateId?: string;
 }
 
-export function DependentsModal({
-  children,
-  associateId,
-}: CreateAssociateDialogFormProps) {
+export function DependentsModal({ children, associateId }: DependentsModalProps) {
   const [currentAssociated, setCurrentAssociated] = useState<string>("");
   const [open, setOpen] = useState(false);
 
@@ -40,33 +38,38 @@ export function DependentsModal({
         if (isOpen && associateId) setCurrentAssociated(associateId);
       }}
     >
-      <DialogTrigger asChild>
-        {children}
-        </DialogTrigger>
-      <DialogContent className="sm:max-w-3xl"   
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>{children}</DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Visualizar dependentes do associado</p>
+        </TooltipContent>
+      </Tooltip>
+
+      <DialogContent
+        className="sm:max-w-3xl"
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
-        >
+      >
         <DialogHeader>
           <DialogTitle asChild>
             {isLoading ? (
-                <div>
-                <Skeleton className="h-6 w-64" />
-                </div>
+              <Skeleton className="h-6 w-64" />
             ) : (
-                <span>Dependentes de {data?.user.name ?? ""}</span>
+              <span>Dependentes de {data?.user.name ?? ""}</span>
             )}
-            </DialogTitle>
+          </DialogTitle>
 
-            <DialogDescription asChild>
+          <DialogDescription asChild>
             {isLoading ? (
-                <div className="mt-2">
+              <div className="mt-2">
                 <Skeleton className="h-4 w-72" />
-                </div>
+              </div>
             ) : (
-                <p>Segue abaixo os dependentes do associado</p>
+              <p>Segue abaixo os dependentes do associado</p>
             )}
-            </DialogDescription>
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">

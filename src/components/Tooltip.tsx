@@ -1,6 +1,7 @@
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import React from "react"
@@ -12,15 +13,15 @@ interface TooltipComponentProps {
 
 export function TooltipComponent({children, title}: TooltipComponentProps) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        {children}
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>
+    <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {children}
+          </TooltipTrigger>
+          <TooltipContent>
             {title}
-        </p>
-      </TooltipContent>
-    </Tooltip>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
   )
 }

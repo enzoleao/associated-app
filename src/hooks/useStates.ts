@@ -9,7 +9,6 @@ export const useStates = (options?: {enabled?: boolean}) => {
     queryFn: async () => {
       const res = await fetch("/api/country-states", {
         method: "GET",
-        cache: "no-store",
       });
 
       if (!res.ok) {
@@ -18,7 +17,9 @@ export const useStates = (options?: {enabled?: boolean}) => {
 
       return res.json();
     },
-    staleTime: 5 * 1000,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+
     ...options,
   });
 

@@ -8,7 +8,6 @@ export const useTenantInformations = (information?: string) => {
       if (!information) return [];
       const res = await fetch(`/api/tenant-informations/${information}`, {
         method: "GET",
-        cache: "no-store",
       });
 
       if (!res.ok) {

@@ -11,7 +11,6 @@ export async function GET() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      cache: "no-store",
     });
 
     if (!res.ok) {
